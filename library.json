@@ -1,0 +1,22 @@
+{
+  "name": "BlueVGA",
+  "keywords": "VGA, game, engine, gamepad, controller, joystick, graphics, font, arduino, bluepill, driver, display, corbera, stm32f103, pixel, tiles",
+  "description": "VGA dirver based on tiles (characters) for the STM32F103C (bluepill). The engine supports 8 colors and 224x240 pixels organized in 28x30 tiles.",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/rocorbera/BlueVGA.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Rodrigo Corbera",
+      "email": "rocorbera@gmail.com",
+      "url": "https://github.com/rocorbera",
+      "maintainer": true
+    }
+  ],
+  "version": "0.0.1",
+  "frameworks": "arduino",
+  "platforms": "STM32F1"
+}

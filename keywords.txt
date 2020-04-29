@@ -1,0 +1,49 @@
+######################################
+# Syntax Coloring Map For BlueVGA
+######################################
+
+######################################
+# Datatypes (KEYWORD1)
+######################################
+
+BlueVGA               KEYWORD1
+
+######################################
+# Methods and Functions (KEYWORD2)
+######################################
+
+waitVSync             KEYWORD2
+getFrameNumber        KEYWORD2
+setBitmap             KEYWORD2
+setFGColor            KEYWORD2
+getFGColor            KEYWORD2
+setBGColor            KEYWORD2
+getBGColor            KEYWORD2
+getColorCode          KEYWORD2
+getReversedColorCode  KEYWORD2
+setColor              KEYWORD2
+setColorRegion        KEYWORD2
+setTile               KEYWORD2
+getTile               KEYWORD2
+printStr              KEYWORD2
+printInt              KEYWORD2
+clearScreen           KEYWORD2
+beginVGA              KEYWORD2
+endVGA                KEYWORD2
+
+######################################
+# Constants (LITERAL1)
+######################################
+
+VRAM_WIDTH            LITERAL1
+VRAM_HEIGHT           LITERAL1
+TILE_W                LITERAL1
+TILE_H                LITERAL1
+RGB_RED               LITERAL1
+RGB_GREEN             LITERAL1
+RGB_BLUE              LITERAL1
+RGB_YELLOW            LITERAL1
+RGB_MAGENTA           LITERAL1
+RGB_CYAN              LITERAL1
+RGB_WHITE             LITERAL1
+RGB_BLACK             LITERAL1
