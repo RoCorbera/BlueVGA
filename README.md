@@ -60,7 +60,7 @@ For representing the character 'A' as in the image above, we can create an array
 // bit 1 is foreground color
 //
 // It can be represented as binary number for making it easy to view the drawing
-// but also can use hexa code such as 0x24 = 36 = 0B0010010
+// but also can use hexa code such as 0x24 = 36 = 0B00100100
 // It has 8x8 bits = 8 bytes to define 'A' letter
 
 const uint8_t bitmap_A = {
