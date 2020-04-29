@@ -108,8 +108,9 @@ Result of this sketch:
 
 ### Documentation and functions
 
-Please look at "BlueVGA.h" for further information on each possible function of the library
-There are also good examples in the library 
+Please look at "BlueVGA.h" for further information on each possible function of the library.
+
+There are also good examples within the library 
 
 ### Important Information
 
