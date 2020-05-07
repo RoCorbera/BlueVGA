@@ -33,16 +33,10 @@
 // create a BlueVGA object using ASCII_FONT as bitmap for all the tiles (ASCII characters)
 BlueVGA vga(ASCII_FONT);
 
-#if 1
 void setup() {
   ScreenSetup();    // performs initial screen caracter drawings
   Animation();      // goes for a forever loop...
 }
-#else
-void setup() {
-  // no code at all just displays a Blue Screen on VGA Monitor...
-}
-#endif
 
 void loop() {
   // no need to code anything here... it's just a function that is called for ever
