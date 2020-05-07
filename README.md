@@ -29,6 +29,7 @@ BlueVGA uses pins:
   * **PC13** for Blue VGA signal
   * **PC14** for Green VGA signal
   * **PC15** for Red VGA signal
+  * **GND** for Ground pin on VGA connector 
 
 Those pins can be connected directly to most VGA monitors using wires or jumpers, as in the images:
 ![Jumpers on VGA](https://rogabeart.mybluemix.net/images/VGA_Jumpers.png)
