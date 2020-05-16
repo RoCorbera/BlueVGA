@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright Â© 2017-2020 Rodrigo Patricio Garcia Corbera. 
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -41,7 +41,6 @@
  * Joystick joystick(PA1, PA2, PA3, PA4, PB5);  // assumes ues of push buttons which are in PULL_UP state, thus by driving each pin to Ground will activate it
  * Joystick joystick(PA3, PA3, PA4, PA5, PB5);  // assumes a mixing of analog joystick with push butom, by using PA3 for right/left (analog), and digital signals in PA4 up, PA5 down and PB5 "fire"
  *
- *  MIT license
  */
 
 #ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32
