@@ -2,8 +2,7 @@
    BlueVGA library - VGA Driver Library for STM32F103
 
    - This library is intended to work in Arduino IDE using Bluepill STM32F103C8 or STM32F103CB boards
-   - It uses ARDUINO Roger's core for STM32F103C board. Please check it at https://github.com/rogerclarkmelbourne/Arduino_STM32
-     you will find arduino installation for Roger's core at https://github.com/rogerclarkmelbourne/Arduino_STM32/wiki/Installation
+   - It works on both STM32 Core and Roger's core for STM32F103C board.
    - It was tested and runs using the following Arduino Settings for the board:
        Generic STM32F103C series
        Optimize Os (Smallest)
@@ -37,6 +36,7 @@ void setup() {
   ScreenSetup();    // performs initial screen caracter drawings
   Animation();      // goes for a forever loop...
 }
+
 
 void loop() {
   // no need to code anything here... it's just a function that is called for ever
@@ -95,8 +95,15 @@ void ScreenSetup (void) {
     vga.setColor(i, 24, vga.getColorCode(RGB_RED, RGB_WHITE));        // then it may be possible to only change the color at x,y not changing the tile at that position
   }
 
+#ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32
+  vga.printStr(5, 0, vga.getColorCode(RGB_YELLOW, RGB_BLACK), (char *)"Roger's Core DEMO!");
+#endif
+
+#ifdef ARDUINO_ARCH_STM32  // Arduino_Core_STM32 Core https://github.com/stm32duino/Arduino_Core_STM32
+  vga.printStr(6, 0, vga.getColorCode(RGB_YELLOW, RGB_BLACK), (char *)"STM32 Core DEMO!");
+#endif
+
   // prints all possible colors with text in the screen
-  vga.printStr(12, 0, vga.getColorCode(RGB_YELLOW, RGB_BLACK), (char *)"DEMO!");
   vga.printStr(7, 11, vga.getColorCode(RGB_RED, RGB_BLACK), (char *)    "-----RED------");
   vga.printStr(7, 12, vga.getColorCode(RGB_MAGENTA, RGB_BLACK), (char *)"---MAGENTA----");
   vga.printStr(7, 13, vga.getColorCode(RGB_BLUE, RGB_BLACK), (char *)   "-----BLUE-----");
