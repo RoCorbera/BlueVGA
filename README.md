@@ -1,4 +1,5 @@
 ![BlueVGA View](https://rogabeart.mybluemix.net/images/BlueVGA.png)
+
 This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
 
 # BlueVGA v1.0
