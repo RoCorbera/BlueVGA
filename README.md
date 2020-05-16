@@ -47,6 +47,8 @@ BlueVGA uses pins:
   * **PC15** for Red VGA signal
   * **G** (BluePill ground) must be connected to GND pin of VGA
 
+![VGA Connection](https://rogabeart.mybluemix.net/images/BlueVGA_Connection.png)
+
 VGA signal goes from 0 volt to 0.7 volt. Bluepill works with 0 to 3.3 volts.
 In order to level the output to a voltage close to 0.7, it's necessary to add a 330R resistor between STM32F103 port and VGA connected pin.
 VGA has a 75R grounded resistor to RGB pins, thus 330R will work as voltage divider and take 3.3 volts to something about 0.6 volts.
@@ -56,8 +58,6 @@ But most modern VGA monitors support 3.3 volts directly, therefore STM32F103 pin
 ![Jumpers on VGA](https://rogabeart.mybluemix.net/images/VGA_Jumpers.png)
 
 ![Jumpers](https://rogabeart.mybluemix.net/images/Bluepill_Joystick.png)
-
-![VGA Connection](https://rogabeart.mybluemix.net/images/BlueVGA_Connection.png)
 
 ## BlueVGA _Screen_
 BlueVGA _Screen_ is composed of 28x30 tiles. 
