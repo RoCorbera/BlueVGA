@@ -16,7 +16,7 @@
       "maintainer": true
     }
   ],
-  "version": "0.0.1",
+  "version": "0.1.0",
   "frameworks": "arduino",
-  "platforms": "STM32F1"
+  "platforms": "STM32F1,stm32"
 }

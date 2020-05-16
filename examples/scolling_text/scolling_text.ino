@@ -2,8 +2,7 @@
    BlueVGA library - VGA Driver Library for STM32F103
 
    - This library is intended to work in Arduino IDE using Bluepill STM32F103C8 or STM32F103CB boards
-   - It uses ARDUINO Roger's core for STM32F103C board. Please check it at https://github.com/rogerclarkmelbourne/Arduino_STM32
-     you will find arduino installation for Roger's core at https://github.com/rogerclarkmelbourne/Arduino_STM32/wiki/Installation
+   - It works on both STM32 Core and Roger's core for STM32F103C board.
    - It was tested and runs using the following Arduino Settings for the board:
        Generic STM32F103C series
        Optimize Os (Smallest)

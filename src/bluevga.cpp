@@ -2,8 +2,7 @@
    BlueVGA library - VGA Driver Library for STM32F103
 
    - This library is intended to work in Arduino IDE using Bluepill STM32F103C8 or STM32F103CB boards
-   - It uses ARDUINO Roger's core for STM32F103C board. Please check it at https://github.com/rogerclarkmelbourne/Arduino_STM32
-     you will find arduino installation for Roger's core at https://github.com/rogerclarkmelbourne/Arduino_STM32/wiki/Installation
+   - It works on both STM32 Core and Roger's core for STM32F103C board.
    - It was tested and runs using the following Arduino Settings for the board:
        Generic STM32F103C series
        Optimize Os (Smallest)
@@ -175,7 +174,13 @@ void BlueVGA::clearScreen(uint8_t color, uint8_t tile) {
 
 
 void BlueVGA::beginVGA(const uint8_t *bmap) {
+#ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32
   systick_disable();
+#endif
+#ifdef ARDUINO_ARCH_STM32  // Arduino_Core_STM32 Core https://github.com/stm32duino/Arduino_Core_STM32
+  SysTick->CTRL = 0;    //Disable Systick  
+#endif
+
   if (bmap) setBitmap(bmap);
   else setBitmap(defaultTile);  // in case bmap is NULL, use a minimum tile bitmap of 1 default empty tile
   // default screen in blue...
@@ -198,6 +203,7 @@ BlueVGA::BlueVGA(const uint8_t *bmap) {
 BlueVGA::~BlueVGA() {
   endVGA();
 }
+
 
 
 

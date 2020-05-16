@@ -2,8 +2,7 @@
    BlueVGA library - VGA Driver Library for STM32F103
 
    - This library is intended to work in Arduino IDE using Bluepill STM32F103C8 or STM32F103CB boards
-   - It uses ARDUINO Roger's core for STM32F103C board. Please check it at https://github.com/rogerclarkmelbourne/Arduino_STM32
-     you will find arduino installation for Roger's core at https://github.com/rogerclarkmelbourne/Arduino_STM32/wiki/Installation
+   - It works on both STM32 Core and Roger's core for STM32F103C board.
    - It was tested and runs using the following Arduino Settings for the board:
        Generic STM32F103C series
        Optimize Os (Smallest)
@@ -28,9 +27,31 @@
 */
 
 #include <stdint.h>
+
+#ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32
 #include <libmaple/gpio.h>
 #include <libmaple/timer.h>
 #include <libmaple/rcc.h>
+
+#define RCC_REG    RCC_BASE
+#define GPIOA_REG  GPIOA_BASE
+#define GPIOB_REG  GPIOB_BASE
+#define GPIOC_REG  GPIOC_BASE
+#define TIM1_REG   TIMER1_BASE
+#define TIM4_REG   TIMER4_BASE
+#endif
+
+#ifdef ARDUINO_ARCH_STM32  // Arduino_Core_STM32 Core https://github.com/stm32duino/Arduino_Core_STM32
+#include <stm32f103xb.h>
+#include <stm32f1xx_hal.h>
+
+#define RCC_REG    RCC
+#define GPIOA_REG  GPIOA
+#define GPIOB_REG  GPIOB
+#define GPIOC_REG  GPIOC
+#define TIM1_REG   TIM1
+#define TIM4_REG   TIM4
+#endif
 
 #include "bluevgadriver.h"
 
@@ -41,9 +62,8 @@ uint8_t CRAM [VRAM_HEIGHT][VRAM_WIDTH] __attribute__((aligned(32))); // Color VR
 uint8_t *TBitmap;
 
 void scanLine(uint8_t *Tiles, uint8_t *Colors, const uint8_t *Bitmap, const uint8_t *gpio, uint8_t *Buffer) {
-
   // assembly for sending the scanline to VGA Monitor using the 3 most significant bits for Red, Green and Blue
-  __asm__ volatile (
+  asm volatile (
     "  mov r6, r0                  \n\t"
     "  mov r7, r2                  \n\t"
     "  mov r8, r4                  \n\t"
@@ -155,7 +175,7 @@ void __attribute__((optimize("O3"))) sendScanLine(void) {
   static uint8_t videoOn = 0;
   static uint32_t scanLineCounter = 0;
   static uint8_t bitmap[VRAM_WIDTH] __attribute__((aligned(32)));
-  const uint8_t *GPIO __attribute__((aligned(32))) = (uint8_t*)(&(GPIOC_BASE)->ODR);
+  const uint8_t *GPIO __attribute__((aligned(32))) = (uint8_t*)(&(GPIOC_REG)->ODR);
 
   if (videoOn) scanLine(TRAM[linePixel >> 3], CRAM[linePixel >> 3], TBitmap + (linePixel & 7), GPIO, bitmap);
 
@@ -163,57 +183,73 @@ void __attribute__((optimize("O3"))) sendScanLine(void) {
   if (!(scanLineCounter & 1)) {
     linePixel++;
   }
-  if (TIMER4_BASE->CNT == 515) {
+  if (TIM4_REG->CNT == 515) {
     videoOn = 0;
     frameNumber++;
   }
-  if (TIMER4_BASE->CNT == 35) {
+  if (TIM4_REG->CNT == 35) {
     videoOn = 1;
     linePixel = 0;
   }
 }
 
 
+// In STM32 Core, there is a linker conflict with HardwareTimer.cpp that defines the very same function...
+// MUST include build_opt.h with this sketch just with the line below
+// -DHAL_TIM_MODULE_ONLY
+void TIM1_CC_IRQHandler(void)  {
+  TIM1_REG->SR &= ~2;
+  sendScanLine();
+}
+
+
 // starts timers for generating VGA sinal from pins A9 (VGA HSync) and B6 (VGA Vsync) for 640x480@60Hz
 void video_init() {
 
-  RCC_BASE->APB2ENR |= RCC_APB2ENR_AFIOEN | RCC_APB2ENR_TIM1EN;
-  RCC_BASE->APB1ENR |= RCC_APB1ENR_TIM4EN;
-  RCC_BASE->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPBEN | RCC_APB2ENR_IOPCEN;
-  GPIOA_BASE->CRH = (GPIOA_BASE->CRH & 0xFFFFFF0F) | 0x000000B0;
-  GPIOB_BASE->CRL = (GPIOB_BASE->CRL & 0xF0FFFFFF) | 0x0B000000;
-  GPIOC_BASE->CRH = 0x33333333;
+  RCC_REG->APB2ENR |= RCC_APB2ENR_AFIOEN | RCC_APB2ENR_TIM1EN;
+  RCC_REG->APB1ENR |= RCC_APB1ENR_TIM4EN;
+  RCC_REG->APB2ENR |= RCC_APB2ENR_IOPAEN | RCC_APB2ENR_IOPBEN | RCC_APB2ENR_IOPCEN;
+  GPIOA_REG->CRH = (GPIOA_REG->CRH & 0xFFFFFF0F) | 0x000000B0;
+  GPIOB_REG->CRL = (GPIOB_REG->CRL & 0xF0FFFFFF) | 0x0B000000;
+  GPIOC_REG->CRH = 0x33333333;
 
-  TIMER1_BASE->CCER |= 0x10;
-  TIMER1_BASE->CR1 &= ~0x1;
-  TIMER1_BASE->CR2 = 0x20;
-  TIMER1_BASE->PSC = 0;
-  TIMER1_BASE->CNT = 0;
-  TIMER1_BASE->ARR = 2287;
-  TIMER1_BASE->CCR2 = 142;
-  TIMER1_BASE->CCR1 = 10;
-  TIMER1_BASE->CR1 |= 0x80;
-  TIMER1_BASE->CCMR1 |= 0x7800;
+  TIM1_REG->CR1 = 0x80;
+  TIM1_REG->CR2 = 0x20;
+  TIM1_REG->CCER = 0x10;
+  TIM1_REG->PSC = 0;
+  TIM1_REG->CNT = 0;
+  TIM1_REG->ARR = 2287;
+  TIM1_REG->CCR2 = 142;
+  TIM1_REG->CCR1 = 10;
+  TIM1_REG->CCMR1 = 0x7800;
+  
+  TIM4_REG->CR1 = 0x80;
+  TIM4_REG->CCER = 0x1;
+  TIM4_REG->PSC = 0;
+  TIM4_REG->ARR = 525;
+  TIM4_REG->CNT = 0;
+  TIM4_REG->CCR1 = 1;
+  TIM4_REG->CCMR1 = 0x0078;
+  TIM4_REG->SMCR = 0x07;
 
-  TIMER4_BASE->CCER |= 0x1;
-  TIMER4_BASE->CR1 &= 0xFFFE;
-  TIMER4_BASE->PSC = 0;
-  TIMER4_BASE->ARR = 525;
-  TIMER4_BASE->CNT = 0;
-  TIMER4_BASE->CCR1 = 1;
-  TIMER4_BASE->CR1 |= 0x80;
-  TIMER4_BASE->CCMR1 |= 0x0078;
-  TIMER4_BASE->SMCR = (TIMER4_BASE->SMCR & 0x88) | 0x07;
-
+#ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32
   timer_attach_interrupt(&timer1, TIMER_CH1, sendScanLine);
+#endif
 
-  TIMER4_BASE->CR1 |= 0x1;
-  TIMER1_BASE->CR1 |= 0x1;
+#ifdef ARDUINO_ARCH_STM32  // Arduino_Core_STM32 Core https://github.com/stm32duino/Arduino_Core_STM32
+  NVIC_EnableIRQ(TIM1_CC_IRQn);
+  TIM1_REG->BDTR = 0x8000;
+  TIM1_REG->DIER = 2;
+  TIM1_REG->CCR1 = 40;
+#endif
+
+  TIM4_REG->CR1 |= 0x1;
+  TIM1_REG->CR1 |= 0x1;
 }
 
 // stops timers and VGA sinal
 void video_end() {
-  TIMER1_BASE->CR1 &= ~0x1;
-  TIMER4_BASE->CR1 *= ~0x1;
+  TIM1_REG->CR1 &= ~0x1;
+  TIM4_REG->CR1 *= ~0x1;
 }
 

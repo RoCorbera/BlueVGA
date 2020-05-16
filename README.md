@@ -1,14 +1,29 @@
 ![BlueVGA View](https://rogabeart.mybluemix.net/images/BlueVGA.png)
 
-# BlueVGA
+This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
+
+# BlueVGA v1.0
 VGA library for STM32F103C8T6 (BluePill) that can manipulate a 224x240 pixels screen with 8x8 Tiles (or Characters) from a user defined bitmap font
 
 ## How to use it with Arduino IDE
 This library was designed to work with Arduino IDE using the STM32F103C8, aka [Bluepill](https://stm32duinoforum.com/forum/wiki_subdomain/index_title_Blue_Pill.html)
-It olny runs with a Arduino board configuration called **Generic STM32F103C Series**
+It olny runs with Arduino board configuration called **Generic STM32F1 Series** or **Generic STM32F103C Series**, depending on the choosen core.
+
+### This library is compatible with the 2 most known "Arduino Cores", in a **transparently way**:
+
+**Option 1**: The STMicroelectronics Official Core known as STM32 Core. This library only runs on minimum version 1.9.0 of STM32 Core
+
+In order to install this board to Arduino IDE, please refer to [this guide](https://github.com/stm32duino/wiki/wiki/Getting-Started)
+
+For more information about STM32 Core [click here](https://github.com/stm32duino/Arduino_Core_STM32)
+For doubts or questions about how to use it, please go to this [forum](https://www.stm32duino.com/)
+
+
+**Option 2**: The community Core known as Roger's Core.
+
 In order to install this board to Arduino IDE, please refer to [this guide](https://stm32duinoforum.com/forum/wiki_subdomain/index_title_Installation.html)
 
-BlueVGA only runs using Roger Clark Arduino Core. More information [here](https://github.com/rogerclarkmelbourne/Arduino_STM32)
+For more information about Roger's Core [click here](https://github.com/rogerclarkmelbourne/Arduino_STM32)
 For doubts or questions about how to use it, please go to this [forum](https://www.stm32duino.com/)
 
 ## What can I do with this Library?
@@ -29,9 +44,13 @@ BlueVGA uses pins:
   * **PC13** for Blue VGA signal
   * **PC14** for Green VGA signal
   * **PC15** for Red VGA signal
-  * **GND** for Ground pin on VGA connector 
 
-Those pins can be connected directly to most VGA monitors using wires or jumpers, as in the images:
+VGA signals go from 0 volt to 0.7 volt. Bluepill works with 0 to 3.3 volts.
+In order to level the output to a voltage close to 0.7, it's necessary to add a 330R resistor between STM32F103 port and VGA connected pin.
+VGA has a 75R grounded resitor in RGB pins, thus 330R will work as voltage divider and take 3.3 volts to something about 0.6 volts.
+
+But most moderns VGA monitors support 3.3 volts directly, therefore STM32F103 pins could be connected directly VGA using wires or jumpers, as in the images:
+
 ![Jumpers on VGA](https://rogabeart.mybluemix.net/images/VGA_Jumpers.png)
 
 ![Jumpers](https://rogabeart.mybluemix.net/images/Bluepill_Joystick.png)
@@ -103,19 +122,17 @@ void loop() {
 ```
 
 Result of this sketch:
-
 ![Hello World](https://rogabeart.mybluemix.net/images/HelloWorld.jpg)
 
 
 ### Documentation and functions
 
-Please look at "BlueVGA.h" for further information on each possible function of the library.
+Please look at "BlueVGA.h" for further information on each possible function of the library
+There are also good examples in the library 
 
-There are also good examples within the library 
+# Important Information
 
-### Important Information
-
-This library halts SysTime functionality in order to generate a solid and clear image on the screen.
+This library **halts SysTime functionality** in order to generate a solid and clear image on the screen.
 Thus functions such as delay(), millis(), micros(), delayMicroseconds() **will not work**!
 Instead of those functions, BlueVGA provides two alternatives:
 
@@ -132,3 +149,8 @@ int32_t getFrameNumber();
 
 ```
 
+**Another important information** is related to use of STM32 Core. In order to achieve a nice VGA resoltution, **BlueVGA turns off HardwareTimer** in this core.
+This is done bu adding a file named "build_opt.h", that does nothing and is not compiled, but tells STM32 Core to use its content as compilation options.
+Beside that effect there is an important side effect: Any Arduino function that relies on a Timer won't work.
+Some known fuctions that need Timer are: HardwareTimer functions, Servo Motor control functions, tone() related functions, pwmWrite() and pinMode(..., PWM) functions
+In order to used any of those functions, unfortunately, user will have to write a new version of it or use some 3rd party library to replace them.
