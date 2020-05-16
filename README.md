@@ -26,9 +26,10 @@ In order to install this board to Arduino IDE, please refer to [this guide](http
 For more information about Roger's Core [click here](https://github.com/rogerclarkmelbourne/Arduino_STM32)
 For doubts or questions about how to use it, please go to this [forum](https://www.stm32duino.com/)
 
-## What can I do with this Library?
-BlueVGA is an Arduino compatible VGA library that can be used to display almost anything to a VGA monitor.
-It uses a low footprint (RAM & Flash) in order to be light enough to leave space for your sketch.
+## What can be done with this Library?
+BlueVGA is an Arduino compatible VGA library that can be used to display text and graphics to a VGA monitor.
+It uses a very low footprint (RAM & Flash).
+BlueVGA uses only about 1.5KB RAM and 8K Flash, leaving a lot of room for your sketch and data.
 
 ### Some Examples
 
@@ -44,16 +45,19 @@ BlueVGA uses pins:
   * **PC13** for Blue VGA signal
   * **PC14** for Green VGA signal
   * **PC15** for Red VGA signal
+  * **G** (BluePill ground) must be connected to GND pin of VGA
 
-VGA signals go from 0 volt to 0.7 volt. Bluepill works with 0 to 3.3 volts.
+VGA signal goes from 0 volt to 0.7 volt. Bluepill works with 0 to 3.3 volts.
 In order to level the output to a voltage close to 0.7, it's necessary to add a 330R resistor between STM32F103 port and VGA connected pin.
-VGA has a 75R grounded resitor in RGB pins, thus 330R will work as voltage divider and take 3.3 volts to something about 0.6 volts.
+VGA has a 75R grounded resistor to RGB pins, thus 330R will work as voltage divider and take 3.3 volts to something about 0.6 volts.
 
-But most moderns VGA monitors support 3.3 volts directly, therefore STM32F103 pins could be connected directly VGA using wires or jumpers, as in the images:
+But most modern VGA monitors support 3.3 volts directly, therefore STM32F103 pins could be connected directly VGA using wires or jumpers, as in the images:
 
 ![Jumpers on VGA](https://rogabeart.mybluemix.net/images/VGA_Jumpers.png)
 
 ![Jumpers](https://rogabeart.mybluemix.net/images/Bluepill_Joystick.png)
+
+![VGA Connection](https://rogabeart.mybluemix.net/images/BlueVGA_Connection.png)
 
 ## BlueVGA _Screen_
 BlueVGA _Screen_ is composed of 28x30 tiles. 
@@ -151,6 +155,6 @@ int32_t getFrameNumber();
 
 **Another important information** is related to use of STM32 Core. In order to achieve a nice VGA resoltution, **BlueVGA turns off HardwareTimer** in this core.
 This is done bu adding a file named "build_opt.h", that does nothing and is not compiled, but tells STM32 Core to use its content as compilation options.
-Beside that effect there is an important side effect: Any Arduino function that relies on a Timer won't work.
+Beside that effect there is an important side effect: **Any Arduino function that relies on a HardwareTimer won't work**.
 Some known fuctions that need Timer are: HardwareTimer functions, Servo Motor control functions, tone() related functions, pwmWrite() and pinMode(..., PWM) functions
-In order to used any of those functions, unfortunately, user will have to write a new version of it or use some 3rd party library to replace them.
+In order to use any of those functions, unfortunately, user will have to write a new version of necessary functions or use some 3rd party library to replace them.
