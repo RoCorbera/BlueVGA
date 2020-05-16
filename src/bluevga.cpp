@@ -175,7 +175,13 @@ void BlueVGA::clearScreen(uint8_t color, uint8_t tile) {
 
 
 void BlueVGA::beginVGA(const uint8_t *bmap) {
+#ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32
   systick_disable();
+#endif
+#ifdef ARDUINO_ARCH_STM32  // Arduino_Core_STM32 Core https://github.com/stm32duino/Arduino_Core_STM32
+  SysTick->CTRL = 0;    //Disable Systick  
+#endif
+
   if (bmap) setBitmap(bmap);
   else setBitmap(defaultTile);  // in case bmap is NULL, use a minimum tile bitmap of 1 default empty tile
   // default screen in blue...
@@ -198,6 +204,7 @@ BlueVGA::BlueVGA(const uint8_t *bmap) {
 BlueVGA::~BlueVGA() {
   endVGA();
 }
+
 
 
 
