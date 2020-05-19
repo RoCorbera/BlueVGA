@@ -1,4 +1,4 @@
-![BlueVGA View](https://rogabeart.mybluemix.net/images/BlueVGA.png)
+![BlueVGA View](https://rogabeweb.mybluemix.net/images/BlueVGA.png)
 
 This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
 
@@ -33,9 +33,9 @@ BlueVGA uses only about 1.5KB RAM and 8K Flash, leaving a lot of room for your s
 
 ### Some Examples
 
-![Image1](https://rogabeart.mybluemix.net/images/example1.png)
+![Image1](https://rogabeweb.mybluemix.net/images/example1.png)
 
-![Image2](https://rogabeart.mybluemix.net/images/example2.png)
+![Image2](https://rogabeweb.mybluemix.net/images/example2.png)
 
 ## Connections
 
@@ -47,7 +47,7 @@ BlueVGA uses pins:
   * **PC15** for Red VGA signal
   * **G** (BluePill ground) must be connected to GND pin of VGA
 
-![VGA Connection](https://rogabeart.mybluemix.net/images/BlueVGA_Connection.png)
+![VGA Connection](https://rogabeweb.mybluemix.net/images/BlueVGA_Connection.png)
 
 VGA signal goes from 0 volt to 0.7 volt. Bluepill works with 0 to 3.3 volts.
 In order to level the output to a voltage close to 0.7, it's necessary to add a 330R resistor between STM32F103 port and VGA connected pin.
@@ -55,23 +55,23 @@ VGA has a 75R grounded resistor to RGB pins, thus 330R will work as voltage divi
 
 But most modern VGA monitors support 3.3 volts directly, therefore STM32F103 pins could be connected directly VGA using wires or jumpers, as in the images:
 
-![Jumpers on VGA](https://rogabeart.mybluemix.net/images/VGA_Jumpers.png)
+![Jumpers on VGA](https://rogabeweb.mybluemix.net/images/VGA_Jumpers.png)
 
-![Jumpers](https://rogabeart.mybluemix.net/images/Bluepill_Joystick.png)
+![Jumpers](https://rogabeweb.mybluemix.net/images/Bluepill_Joystick.png)
 
 ## BlueVGA _Screen_
 BlueVGA _Screen_ is composed of 28x30 tiles. 
 Each tile has only 2 possible colors, a foreground and background color. 
 BlueVGA is designed to display 8 different colors: black, blue, cyan, green, yellow, red, magenta and white.
 
-![BlueVGA Image 8 Colors](https://rogabeart.mybluemix.net/images/8colors.png)
+![BlueVGA Image 8 Colors](https://rogabeweb.mybluemix.net/images/8colors.png)
 
 ### What are Tiles?
 A tile can be as simple as a character.
 A tile is a bitmap of 8x8 pixels (bits). Bit 1 is foreground and Bit 0 background.
 This bitmap can represent a letter or any graphic drawing with 8x8 pixels.
 
-![IMAGE Char A](https://rogabeart.mybluemix.net/images/charA.png)
+![IMAGE Char A](https://rogabeweb.mybluemix.net/images/charA.png)
 
 A tile has 8 bytes (64 bits).
 For representing the character 'A' as in the image above, we can create an array such as:
@@ -126,7 +126,7 @@ void loop() {
 ```
 
 Result of this sketch:
-![Hello World](https://rogabeart.mybluemix.net/images/HelloWorld.jpg)
+![Hello World](https://rogabeweb.mybluemix.net/images/HelloWorld.jpg)
 
 
 ### Documentation and functions
