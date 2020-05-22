@@ -33,7 +33,9 @@ BlueVGA uses only about 1.5KB RAM and 8K Flash, leaving a lot of room for your s
 
 ### Some Examples
 
-![Image1](https://rogabeweb.mybluemix.net/images/example1.png)
+Click the image below to watch it in action (you will be redirected to YouTube)
+
+[![Video Snake Game](http://img.youtube.com/vi/nNWkdR4P_UA/0.jpg)](http://www.youtube.com/watch?v=nNWkdR4P_UA)
 
 ![Image2](https://rogabeweb.mybluemix.net/images/example2.png)
 
