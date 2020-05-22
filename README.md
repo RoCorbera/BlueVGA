@@ -126,6 +126,7 @@ void loop() {
 ```
 
 Result of this sketch:
+
 ![Hello World](https://rogabeweb.mybluemix.net/images/HelloWorld.jpg)
 
 
