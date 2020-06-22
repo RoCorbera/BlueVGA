@@ -1,5 +1,7 @@
 ![BlueVGA View](https://rogabeweb.mybluemix.net/images/BlueVGA.png)
 
+Demo video here: [http://www.youtube.com/watch?v=nNWkdR4P_UA](http://www.youtube.com/watch?v=nNWkdR4P_UA)
+
 This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
 
 # BlueVGA v1.0
