@@ -159,7 +159,9 @@ int32_t getFrameNumber();
 ```
 
 **Another important information** is related to use of STM32 Core. In order to achieve a nice VGA resoltution, **BlueVGA turns off HardwareTimer** in this core.
-This is done bu adding a file named "build_opt.h", that does nothing and is not compiled, but tells STM32 Core to use its content as compilation options.
+This is done by adding a file named "build_opt.h", that does nothing and is not compiled, but tells STM32 Core to use its content as compiling options.
 Beside that effect there is an important side effect: **Any Arduino function that relies on a HardwareTimer won't work**.
 Some known fuctions that need Timer are: HardwareTimer functions, Servo Motor control functions, tone() related functions, pwmWrite() and pinMode(..., PWM) functions
 In order to use any of those functions, unfortunately, user will have to write a new version of necessary functions or use some 3rd party library to replace them.
+
+For work aroud, it's possible to use Roger's Core instead, which doesn't turn off HardwareTimer.
