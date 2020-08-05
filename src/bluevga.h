@@ -16,7 +16,7 @@
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
     This code is licensed as Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) - https://creativecommons.org/licenses/by-nc-sa/4.0/
-    Redistributions of source code must retain the above copyright notice, and meet al conditions as defined in  https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
+    Redistributions of source code must retain the above copyright notice, and meet all conditions as defined in  https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
     Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the this disclaimer in 
     the documentation and/or other materials provided with the distribution.
 
@@ -29,37 +29,75 @@
 #ifndef BLUE_VGA_H
 #define BLUE_VGA_H
 
-#define VRAM_WIDTH            28           // Screen is composed by 28x30 characters or tiles of 8x8 pixels each
-#define VRAM_HEIGHT           30           // Thus it is designed to displaying those tiles in any place in the screen of 28x30 
-#define TILE_W                8            // Tile Width
-#define TILE_H                8            // Tile Height
-
-// constants for each of the 8 possible colors. It uses RGB0 (4 bits) for each color - but we use only 3 pins (PC15-13), with 3bpp or 8 colors
-typedef enum {
-  RGB_RED     = 0x8,
-  RGB_GREEN   = 0x4,
-  RGB_BLUE    = 0x2,
-  RGB_YELLOW  = 0xC,
-  RGB_MAGENTA = 0xA,
-  RGB_CYAN    = 0x6,
-  RGB_WHITE   = 0xE,
-  RGB_BLACK   = 0x0,
-} rgbColors;
-
-
 #ifdef __cplusplus
-class BlueVGA {
+#include "vgaProperties.h"
+#include "Print.h"
+
+class BlueVGA : public Print{
 
   private:
     // empty pattern on tile zero as default for case no bitmap is declared and initialized (avoid NULL pointer issue)
     const uint8_t defaultTile[8] = {0};
-
+    // Using Print Class from Arduino. This allows to use BlueVGA::print(...) and BlueVGA::println(...)
+    uint8_t cursorX = 0, cursorY = 0; // cursor position for printing (28x30)
+    bool wrap = true;                 // define if print beyond right screen margin will coninue on next line
+    uint8_t fgColor = RGB_YELLOW, bgColor = RGB_BLUE;          // colors for foreground and cackground when printing
+    uint8_t textTabSize = 4;         // default set TAB in 4 spaces
+    
   public:
+#ifdef ARDUINO_ARCH_STM32  // Arduino_Core_STM32 Core https://github.com/stm32duino/Arduino_Core_STM32
+    size_t write(uint8_t ch);
+    size_t write(const uint8_t *buffer, size_t size);
+#endif    
+    
+#ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32
+    size_t write(uint8_t ch);            // implementing virtual function write() to implement Print Class
+    size_t write(const char *str);
+    size_t write(const void *buf, uint32_t len);    
+#endif    
 
     // constructors and destructor
     BlueVGA(const uint8_t *bmap);
     BlueVGA();
     ~BlueVGA();
+
+    /*
+        Functions to manipulate text printing in conjunction with Print Class
+        For printing on screen it's possible to use print() and println()
+        Text will be scrolled up if last line of the screen is printed with println()
+        Text has a foreground color and a bakcground color for each character
+        Printing at the en of the screen line can continue on next line or be wrapped at its edge
+        
+    */
+    inline void setTextColor(uint8_t cfg = RGB_WHITE) { 
+        fgColor = cfg; 
+    }
+    inline void setTextColor(uint8_t cfg = RGB_WHITE, uint8_t cbg = RGB_BLUE) { 
+        fgColor = cfg; 
+        bgColor = cbg; 
+    }
+    inline uint8_t getTextColor() { 
+        return ((bgColor << 4) | (fgColor & 0x0F));
+    }
+    inline void setTextCursor(uint8_t x = 0, uint8_t y = 0) { 
+        cursorX = x < VRAM_WIDTH ? x: VRAM_WIDTH; 
+        cursorY = y < VRAM_HEIGHT ? y : VRAM_HEIGHT; 
+    } 
+    inline void setTextWrap(bool w = true) { 
+        wrap = w; 
+    }
+    inline uint8_t getTextCursorX() { 
+        return(cursorX);
+    } 
+    inline uint8_t getTextCursorY() { 
+        return(cursorY);
+    } 
+    inline void setTextTab(uint8_t t = 4) { 
+        textTabSize = t; 
+    }
+
+    void scrollText(uint8_t lines = 1);
+
 
     /*
        This lib works on Color VGA 640x480 @ 60Hz. It draws 60 Frames per Second.

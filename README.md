@@ -4,7 +4,7 @@ Demo video here: [http://www.youtube.com/watch?v=nNWkdR4P_UA](http://www.youtube
 
 This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
 
-# BlueVGA v1.0
+# BlueVGA v1.1
 VGA library for STM32F103C8T6 (BluePill) that can manipulate a 224x240 pixels screen with 8x8 Tiles (or Characters) from a user defined bitmap font
 
 ## How to use it with Arduino IDE
@@ -32,6 +32,40 @@ For doubts or questions about how to use it, please go to this [forum](https://w
 BlueVGA is an Arduino compatible VGA library that can be used to display text and graphics to a VGA monitor.
 It uses a very low footprint (RAM & Flash).
 BlueVGA uses only about 1.5KB RAM and 8K Flash, leaving a lot of room for your sketch and data.
+
+This library is compatible with Print Class, therefore it is possible to use print() and println() functions from BlueVGA class.
+This works in the same way as Serial.print() and Serial.println() but its output is displayed on the VGA screen, with text scrolling.
+In the examples there is the printTest.ino that demonstrates this capabilities.
+
+## Functions related to text printing:
+```javascript
+#include "bluevga.h"
+#include "font.h"
+
+BlueVGA vga(ASCII_FONT);   // starts VGA driver using bitmap array ASCII_FONT
+
+// It is based on 'hello_world.ino' that can be found in the library examples 
+void setup() {
+  vga.setTextCursor(0, 1);                 // position cursor at x = 0 and y = 1 (second line) in the screen
+  vga.print("Hello World\t\t");            // it supports all Arduino way for println() and understands '\t' as tab, default 4 columns
+  vga.print("tab space\n");                // it also understands '\n' as new line and '\r' as carriage return in the same line
+  vga.setTextWrap(false);                  // it allows to wrap text or not when printing beyond right margin of the screen
+  vga.setTextTab(3);                       // it allows to set number of columns for TAB ('\t')
+  vga.setTextColor(RGB_GREEN, RGB_BLACK);  // it allows to define foreground (green) and background (black) colors for further printing
+  vga.print(3.1415, 3);                    // it works as Arduino, printing floats witn any number of decimal digits 
+  uint8_t color = vga.getTextColor();      // gets current colors in format 8 bits rgb0rgb0 BGColor 4 bits followed by FGColor 4 bits
+  uint8_t x = vga.getTextCursorX();        // gets current X cursor position
+  uint8_t y = vga.getTextCursorY();        // gets current Y cursor position
+  vga.scrollText(3);                       // it scrolls the screen up 3 lines, no change on current cursor position. Just scrolls text and its colors!
+  for(uint32_t i=0;;i++) {                 // prints increasing numbers for ever and scrolls the screen when reaching last line
+    vga.print("value of i is ");
+    vga.println(i);
+    vga.waitVSync();                       // waits to end of VGA frame drawing routine to end -- makes the image to stay solid
+  }
+}
+
+
+```
 
 ### Some Examples
 

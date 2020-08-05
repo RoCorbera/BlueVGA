@@ -59,6 +59,7 @@ volatile uint32_t frameNumber = 0;
 
 uint8_t TRAM [VRAM_HEIGHT][VRAM_WIDTH] __attribute__((aligned(32))); // VRAM with static Tiles of 8 x 8 pixels
 uint8_t CRAM [VRAM_HEIGHT][VRAM_WIDTH] __attribute__((aligned(32))); // Color VRAM - 8 + 8 colors = 4bits + 4bits (Foreground + Background)
+
 uint8_t *TBitmap;
 
 void scanLine(uint8_t *Tiles, uint8_t *Colors, const uint8_t *Bitmap, const uint8_t *gpio, uint8_t *Buffer) {
