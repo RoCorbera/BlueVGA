@@ -10,29 +10,30 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
     This code is licensed as Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) - https://creativecommons.org/licenses/by-nc-sa/4.0/
     Redistributions of source code must retain the above copyright notice, and meet al conditions as defined in  https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.
-    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the this disclaimer in 
+    Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the this disclaimer in
     the documentation and/or other materials provided with the distribution.
 
-    ** THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. 
+    ** THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.
     ** IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
     ** WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 */
 
 #include <arduino.h>
+#include "bluevga.h"
 #include "bluevgadriver.h"
 
 
 /*
 
-   Check bluevga.h for documentation about the functions
+   Check bluevga.h for documentation about these methods/functions
 
 */
 
@@ -178,7 +179,7 @@ void BlueVGA::beginVGA(const uint8_t *bmap) {
   systick_disable();
 #endif
 #ifdef ARDUINO_ARCH_STM32  // Arduino_Core_STM32 Core https://github.com/stm32duino/Arduino_Core_STM32
-  SysTick->CTRL = 0;    //Disable Systick  
+  SysTick->CTRL = 0;    //Disable Systick
 #endif
 
   if (bmap) setBitmap(bmap);
@@ -205,5 +206,119 @@ BlueVGA::~BlueVGA() {
 }
 
 
+// Vertical Scroll manipulation
+void BlueVGA::scrollText(uint8_t lines) {
+  if (!lines) return;
+  lines %= VRAM_HEIGHT;
+  uint32_t *srcT = (uint32_t *)TRAM[lines], *srcC = (uint32_t *)CRAM[lines];  // 32bits at once
+  uint32_t *dstT = (uint32_t *)TRAM[0], *dstC = (uint32_t *)CRAM[0];          // 32bits at once
+  for (uint8_t y = lines; y < VRAM_HEIGHT; y++) {
+    // it's faster not using loops
+    *dstT++ = *srcT++; *dstT++ = *srcT++; *dstT++ = *srcT++; *dstT++ = *srcT++;
+    *dstT++ = *srcT++; *dstT++ = *srcT++; *dstT++ = *srcT++;
+    *dstC++ = *srcC++; *dstC++ = *srcC++; *dstC++ = *srcC++; *dstC++ = *srcC++;
+    *dstC++ = *srcC++; *dstC++ = *srcC++; *dstC++ = *srcC++;
+  }
+//  uint8_t dstColor1 = ((bgColor << 4) | (fgColor & 0x0F));
+//  uint32_t dstColor4 = dstColor1;                                             // 32bits at once
+//  dstColor4 = (dstColor4 << 8) | dstColor1;
+//  dstColor4 = (dstColor4 << 8) | dstColor1;
+//  dstColor4 = (dstColor4 << 8) | dstColor1;
+  for (uint8_t y = 0; y < lines; y++) {                                         // fill last line with ' ' (space char) not modifying previous fg/bg colors
+    *dstT++ = 0x20202020; *dstT++ = 0x20202020; *dstT++ = 0x20202020; *dstT++ = 0x20202020;
+    *dstT++ = 0x20202020; *dstT++ = 0x20202020; *dstT++ = 0x20202020;
+//    *dstC++ = dstColor4;  *dstC++ = dstColor4;  *dstC++ = dstColor4;  *dstC++ = dstColor4;
+//    *dstC++ = dstColor4;  *dstC++ = dstColor4;  *dstC++ = dstColor4;
+  }
+}
+
+
+/*
+
+  For reference, the functions below are used to set color of the text to be printed and if it gets wrapped to the next line or not
+  Everything is declared in bluevga.h
+
+    void setTextColor(uint8_t cfg = RGB_WHITE) { 
+        fgColor = cfg; 
+    }
+    
+    void setTextColor(uint8_t cfg = RGB_WHITE, uint8_t cbg = RGB_BLUE) { 
+        fgColor = cfg; 
+        bgColor = cbg; 
+    }
+    
+    uint8_t getTextColor() { 
+        return ((bgColor << 4) | (fgColor & 0x0F));
+    }
+    
+    void setTextCursor(uint8_t x = 0, uint8_t y = 0) { 
+        cursorX = x < VRAM_WIDTH ? x: VRAM_WIDTH; 
+        cursorY = y < VRAM_HEIGHT ? y : VRAM_HEIGHT; 
+    }
+     
+    void setTextWrap(bool w = true) { 
+        wrap = w; 
+    }
+    
+    uint8_t getTextCursorX() { 
+        return(cursorX);
+    }
+     
+    uint8_t getTextCursorY() { 
+        return(cursorY);
+    }
+     
+    void setTextTab(uint8_t t = 4) { 
+        textTabSize = t; 
+    }
+
+*/
+
+// These functions enable Arduino print() and println() to work in the same way it does with Serial.print/println()
+size_t BlueVGA::write(uint8_t ch) {
+
+  if (cursorY == VRAM_HEIGHT) {      // does it overflow screen bottom?
+    cursorY = VRAM_HEIGHT - 1;       // keep cursorY at last line of the screen
+    scrollText();                    // scroll text up 1 line
+  }
+  if (ch == '\r') cursorX = 0;           // places cursor at the begining of the line
+  else {
+    // prints the character in the screen and updates cursor position -- only ASCII printable characters
+    if (cursorX < VRAM_WIDTH && ch > 31 && ch < 127)
+      setTile(cursorX++, cursorY, ch, fgColor, bgColor);
+    if (ch == '\t')                      // TAB has 4 spaces spaces and it aligns to the next X that is multiple of 4
+      cursorX = ((cursorX + textTabSize) / textTabSize) * textTabSize;
+    if (ch == '\n' || (cursorX >= VRAM_WIDTH && wrap)) { // check wrapping
+      cursorX = 0;
+      cursorY++;
+    }
+  }
+  return 1;
+}
+
+
+#ifdef ARDUINO_ARCH_STM32  // Arduino_Core_STM32 Core https://github.com/stm32duino/Arduino_Core_STM32
+size_t BlueVGA::write(const uint8_t *buf, size_t len)
+#endif
+#ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32  
+size_t BlueVGA::write(const void *buf, uint32_t len)
+#endif
+{
+  uint8_t *strBuf = (uint8_t *) buf;
+  size_t n = 0;
+  if (len) for (uint16_t i = 0; i < len; i++) {
+      size_t ret = write(strBuf[i]);
+      if (!ret) break;
+      n += ret;
+    }
+  return n;
+}
+
+#ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32  
+size_t BlueVGA::write(const char *str) {
+  if (str) return (write((const void *)str, strlen(str)));
+  else return 0;
+}
+#endif
 
 

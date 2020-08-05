@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright � 2017-2020 Rodrigo Patricio Garcia Corbera. 
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,25 +26,25 @@
 
 */
 
-#ifndef BLUE_VGA_DRIVER_H
-#define BLUE_VGA_DRIVER_H
 
-#include "vgaProperties.h"
+#ifndef VGA_SIZE_H
+#define VGA_SIZE_H
 
-#ifdef __cplusplus
-extern "C" {
+#define VRAM_WIDTH            28           // Screen is composed by 28x30 characters or tiles of 8x8 pixels each
+#define VRAM_HEIGHT           30           // Thus it is designed to displaying those tiles in any place in the screen of 28x30 
+#define TILE_W                8            // Tile Width
+#define TILE_H                8            // Tile Height
+
+// constants for each of the 8 possible colors. It uses RGB0 (4 bits) for each color - but we use only 3 pins (PC15-13), with 3bpp or 8 colors
+typedef enum {
+  RGB_BLACK   = 0x0,
+  RGB_BLUE    = 0x2,
+  RGB_GREEN   = 0x4,
+  RGB_CYAN    = 0x6,
+  RGB_RED     = 0x8,
+  RGB_MAGENTA = 0xA,
+  RGB_YELLOW  = 0xC,
+  RGB_WHITE   = 0xE,
+} rgbColors;
+
 #endif
-void video_init(void);
-void video_end(void);
-// using VRAM_HEIGHT + 1 to make possible a simple way for scrolling text and graphics
-extern uint8_t TRAM [VRAM_HEIGHT][VRAM_WIDTH];  // VRAM with Characters or Tiles of 8 x 8 pixels
-extern uint8_t CRAM [VRAM_HEIGHT][VRAM_WIDTH];  // Color VRAM - color = 3bits + 3bits (Foreground + Background) - 8 colors on PC15-PC13 port (RGB)
-extern uint8_t *TBitmap;
-extern volatile uint32_t frameNumber;
-#ifdef __cplusplus
-}
-#endif
-
-#endif
-
-
