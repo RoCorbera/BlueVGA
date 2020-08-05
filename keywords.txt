@@ -30,6 +30,17 @@ printInt              KEYWORD2
 clearScreen           KEYWORD2
 beginVGA              KEYWORD2
 endVGA                KEYWORD2
+setTextColor          KEYWORD2
+getTextColor          KEYWORD2
+setTextCursor         KEYWORD2
+getTextCursorX        KEYWORD2
+getTextCursorY        KEYWORD2
+setTextWrap           KEYWORD2
+setTextTab            KEYWORD2
+scrollText            KEYWORD2
+write                 KEYWORD2
+print                 KEYWORD2
+println               KEYWORD2
 
 ######################################
 # Constants (LITERAL1)
