@@ -219,7 +219,7 @@ void video_init() {
   TIM1_REG->CCER = 0x10;
   TIM1_REG->PSC = 0;
   TIM1_REG->CNT = 0;
-  TIM1_REG->ARR = 2287;
+  TIM1_REG->ARR = 2288;
   TIM1_REG->CCR2 = 275;
   TIM1_REG->CCR1 = 10;
   TIM1_REG->CCMR1 = 0x7800;
