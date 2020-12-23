@@ -34,7 +34,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-void video_init(void);
+void video_init(uint8_t flashFont);
 void video_end(void);
 // using VRAM_HEIGHT + 1 to make possible a simple way for scrolling text and graphics
 extern uint8_t TRAM [VRAM_HEIGHT][VRAM_WIDTH];  // VRAM with Characters or Tiles of 8 x 8 pixels

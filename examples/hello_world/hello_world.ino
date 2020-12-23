@@ -37,10 +37,13 @@
 BlueVGA vga(ASCII_FONT);
 
 void setup() {
-  // no code at all just displays a Blue Screen on VGA Monitor... the declaration of vga global variable starts VGA driver
+  // by default displays a Blue Screen on VGA Monitor... the declaration of vga global variable starts VGA driver
+  vga.println("Hello World!!!");  // displays to the first line on screen
+  vga.waitVSync(120);             // blocks based on 1/60 of a second. 1 secnd = 60 as argument. Here it delays for 2 seconds
 }
 
 void loop() {
-  // no code here too...
+  vga.waitVSync(6);               // same as delay(100); -- based on 1/60 of second
+  vga.print("Hello World! ");     // displays text side by side until start scrolling
 }
 

@@ -39,15 +39,26 @@
 
 void BlueVGA::waitVSync(uint16_t waitFrames) {
   uint32_t myNextFrame = frameNumber + waitFrames;
-  while (myNextFrame >= frameNumber) asm volatile ("wfi");
+  while (myNextFrame > frameNumber) asm volatile ("wfi");
 }
 
 uint32_t BlueVGA::getFrameNumber() {
   return frameNumber;
 }
 
-void BlueVGA::setBitmap(const uint8_t *bmap) {
-  TBitmap = (uint8_t *)bmap;
+
+void BlueVGA::setFontBitmap(const uint8_t *bmap) {
+  bool flashFont = ((uint32_t) bmap) < 0x20000000;
+  if (bmap) {
+    TBitmap = (uint8_t *)bmap;
+    // allow to exchange between Flash Tile Bitmap and RAM Tile Bitmap 
+#ifdef ARDUINO_ARCH_STM32  // Arduino_Core_STM32 Core https://github.com/stm32duino/Arduino_Core_STM32
+    TIM1->CCR1 = ((uint32_t) bmap) < 0x20000000 ? 40 : 165;
+#endif
+#ifdef ARDUINO_ARCH_STM32F1  // Roger's BluePill Core https://github.com/rogerclarkmelbourne/Arduino_STM32
+    TIMER1_BASE->CCR1 = ((uint32_t) bmap) < 0x20000000 ? 10 : 135;
+#endif
+  }
 }
 
 void BlueVGA::setBGColor(uint8_t x, uint8_t y, uint8_t c) {
@@ -138,6 +149,23 @@ void BlueVGA::setTile(uint8_t x, uint8_t y, uint8_t t, uint8_t color) {
   setColor(x, y, color);
 }
 
+void BlueVGA::setTileRowsFast(uint8_t y1, uint8_t y2, uint8_t tile) {
+  if (y1 > y2 || y1 >= VRAM_HEIGHT || y2 >= VRAM_HEIGHT) return;
+
+  uint32_t fourTiles = tile | tile << 8 | tile << 16 | tile << 24;
+  uint32_t *rowHead = (uint32_t *) TRAM[y1];
+  for (uint8_t i = y1; i <= y2; i++) {
+    // 4 * 7 = 28 tiles per row
+    *rowHead++ = fourTiles;
+    *rowHead++ = fourTiles;
+    *rowHead++ = fourTiles;
+    *rowHead++ = fourTiles;
+    *rowHead++ = fourTiles;
+    *rowHead++ = fourTiles;
+    *rowHead++ = fourTiles;
+  }
+}
+
 void BlueVGA::printStr(uint8_t x, uint8_t y, uint8_t color, char *str) {
   uint8_t l = strlen(str);
   if (l) {
@@ -167,6 +195,13 @@ void BlueVGA::printInt (uint8_t x, uint8_t y, uint32_t number, uint8_t color, bo
   } while (offsetX >= 0);
 }
 
+
+// set all tiles of the screen to a specific tile number, not changing screen colors
+void BlueVGA::fillScreen(uint8_t tile) {
+  setTileRowsFast(0, VRAM_HEIGHT - 1, tile);
+}
+
+
 void BlueVGA::clearScreen(uint8_t color, uint8_t tile) {
   for (uint8_t y = 0; y < VRAM_HEIGHT; y++)
     for (uint8_t x = 0; x < VRAM_WIDTH; x++)
@@ -182,11 +217,11 @@ void BlueVGA::beginVGA(const uint8_t *bmap) {
   SysTick->CTRL = 0;    //Disable Systick
 #endif
 
-  if (bmap) setBitmap(bmap);
-  else setBitmap(defaultTile);  // in case bmap is NULL, use a minimum tile bitmap of 1 default empty tile
   // default screen in blue...
   clearScreen(0x20, 0);
-  video_init();
+  if (bmap) setFontBitmap(bmap);
+  else setFontBitmap(defaultTile);  // in case bmap is NULL, use a minimum tile bitmap of 1 default empty tile
+  video_init(((uint32_t) bmap) < 0x20000000);
 }
 
 void BlueVGA::endVGA() {
