@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright Â© 2017-2020 Rodrigo Patricio Garcia Corbera. 
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ class BlueBitmap {
     static uint8_t firstFreeTile;      // reference index of the first usable tile for drwaing pixels on the screen
 
   public:
-    // this function dinamicaly allocates RAM tiles from ramFont when necessary and set it to the position
+    // this function dynamicaly allocates RAM tiles from ramFont when necessary and set it to the position
     // where the pixel will be set or reset
     // the control of what tiles ar already allocated is done with firstFreeTile and nextFreeTile
     // It works as a circular buffer, thus if we set too many pixels apart from each other, we can 
