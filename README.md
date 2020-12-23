@@ -85,7 +85,7 @@ There are 256 RAM Tiles, thus, in a 16 x 16 tile arrangement, we could create a 
 But those RAM Tiles can be any place in the 28x30 tile space.
 This allows to create, for instance, an animation such as Space Invaders (in the examples), or even create widgets for the user interface.
 
-### Main Methods are:
+#### Main Methods are:
 ```javascript
 void BlueBitmap::drawPixel(uint8_t x, uint8_t y, bool setReset) // to draw a pixel on any place of the screen
 void BlueBitmap::drawBitmap(uint8_t x, uint8_t y, uint8_t frameNum, bool setReset, int8_t color) // to draw a bitmap on the screen
