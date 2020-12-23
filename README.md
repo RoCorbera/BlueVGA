@@ -9,9 +9,9 @@ VGA library for STM32F103C8T6 (BluePill) that can manipulate a 224x240 pixels sc
 
 In version 1.2 there is a graphical mode that allows to manipulate pixels as well. Actually it uses 256 RAM Tiles that can be positioned any place in the screen and, by this way, it is possible to set individual pixels.
 
-This is not a full screen pixel setting, but alloews for several graphical applications. Please check examples of this library to learn more about it.
+This is not a full screen pixel setting, but allows for several graphical applications. Please check the examples in this library to learn more about it.
 
-This graphical mode allow to create some animation such as in the Space_Invaders_Animation_Demo sketch found in examples.
+This graphical mode can be used to create some animation such as in the Space_Invaders_Animation_Demo sketch found in examples - screenshot:
 
 
 ![Space Invaders Screen Shot](https://rogabeweb.mybluemix.net/images/SpaceInvaders.png)
