@@ -191,6 +191,7 @@ void __attribute__((optimize("O3"))) sendScanLine(void) {
   if (TIM4_REG->CNT == 35) {
     videoOn = 1;
     linePixel = 0;
+    scanLineCounter = 0;
   }
 }
 
@@ -205,7 +206,7 @@ void TIM1_CC_IRQHandler(void)  {
 
 
 // starts timers for generating VGA sinal from pins A9 (VGA HSync) and B6 (VGA Vsync) for 640x480@60Hz
-void video_init() {
+void video_init(uint8_t flashFont) {
 
   RCC_REG->APB2ENR |= RCC_APB2ENR_AFIOEN | RCC_APB2ENR_TIM1EN;
   RCC_REG->APB1ENR |= RCC_APB1ENR_TIM4EN;
@@ -219,9 +220,9 @@ void video_init() {
   TIM1_REG->CCER = 0x10;
   TIM1_REG->PSC = 0;
   TIM1_REG->CNT = 0;
-  TIM1_REG->ARR = 2288;
-  TIM1_REG->CCR2 = 275;
-  TIM1_REG->CCR1 = 10;
+  TIM1_REG->ARR = 2287;
+  TIM1_REG->CCR2 = 142;
+  TIM1_REG->CCR1 = flashFont ? 10 : 135;
   TIM1_REG->CCMR1 = 0x7800;
   
   TIM4_REG->CR1 = 0x80;
@@ -241,7 +242,7 @@ void video_init() {
   NVIC_EnableIRQ(TIM1_CC_IRQn);
   TIM1_REG->BDTR = 0x8000;
   TIM1_REG->DIER = 2;
-  TIM1_REG->CCR1 = 40;
+  TIM1_REG->CCR1 = flashFont ? 40 : 165;
 #endif
 
   TIM4_REG->CR1 |= 0x1;
@@ -251,6 +252,6 @@ void video_init() {
 // stops timers and VGA sinal
 void video_end() {
   TIM1_REG->CR1 &= ~0x1;
-  TIM4_REG->CR1 *= ~0x1;
+  TIM4_REG->CR1 &= ~0x1;
 }
 

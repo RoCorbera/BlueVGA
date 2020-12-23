@@ -109,7 +109,7 @@ class BlueVGA : public Print{
     uint32_t getFrameNumber();                  // it returns a Frame Sequenced Number
 
     // allows to set the bitmap used to draw tiles in the screen...
-    void setBitmap(const uint8_t *bmap);
+    void setFontBitmap(const uint8_t *bmap);
 
     /*
        The display has 28x30 tiles that can use 2 colors each. Foreground color for pixels "1" ans background color for pixels "0"
@@ -136,8 +136,8 @@ class BlueVGA : public Print{
     void setTile(uint8_t x, uint8_t y, uint8_t tile);                            // works as a printChar, placing a character or Tile at x,y - does note modify tile color
     void setTile(uint8_t x, uint8_t y, uint8_t t, uint8_t color);                // Helper function for placing a tile at xxy using color 4+4 bits for BG+FG color in single 8bits code
     void setTile(uint8_t x, uint8_t y, uint8_t t, uint8_t fgc, uint8_t bgc);     // Helper function for placing a tile at x,y using colors as foreground and background RGB0 4 bits each
+    void setTileRowsFast(uint8_t y1 = 0, uint8_t y2 = VRAM_HEIGHT - 1, uint8_t tile = 0);
     uint8_t getTile(uint8_t x, uint8_t y);                                       // returns the Tile at x,y in the screen VRAM (video RAM)
-
     /*
         simple helper function that displays a string or any NULL terminated tile sequence in the screen.
         In order to use it, the scketch mus set tile Bitmaps first.
@@ -147,6 +147,9 @@ class BlueVGA : public Print{
     void printStr(uint8_t x, uint8_t y, uint8_t color, char *str);
     // prints a integer using color, with/without leading '0's, limited to <spaceForDigits> digits/tiles
     void printInt (uint8_t x, uint8_t y, uint32_t number, uint8_t color, bool leadingZeros = false, uint8_t spaceForDigits = 5);
+
+    // Helper function to fill the whole screen with a specific tile, mostly used in conjuntion with BlueGraph Class
+    void fillScreen(uint8_t tile = 0);
 
     // Helper functions for clearing the screen by copying a ' ' (blank character ASCII code 0x20) on every place of the screen
     void clearScreen(uint8_t color = 0, uint8_t tile = ' ');

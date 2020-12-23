@@ -4,8 +4,17 @@ Demo video here: [http://www.youtube.com/watch?v=nNWkdR4P_UA](http://www.youtube
 
 This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
 
-# BlueVGA v1.1
+# BlueVGA v1.2
 VGA library for STM32F103C8T6 (BluePill) that can manipulate a 224x240 pixels screen with 8x8 Tiles (or Characters) from a user defined bitmap font
+
+In version 1.2 there is a graphical mode that allows to manipulate pixels as well. Actually it uses 256 RAM Tiles that can be positioned any place in the screen and, by this way, it is possible to set individual pixels.
+
+This is not a full screen pixel setting, but alloews for several graphical applications. Please check examples of this library to learn more about it.
+
+This graphical mode allow to create some animation such as in the Space_Invaders_Animation_Demo sketch found in examples.
+
+
+![Space Invaders Screen Shot](https://rogabeweb.mybluemix.net/images/SpaceInvaders.png)
 
 ## How to use it with Arduino IDE
 This library was designed to work with Arduino IDE using the STM32F103C8, aka [Bluepill](https://stm32duinoforum.com/forum/wiki_subdomain/index_title_Blue_Pill.html)
