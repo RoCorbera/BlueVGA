@@ -76,6 +76,39 @@ void setup() {
 
 ```
 
+## Functions related to graphical drawing:
+
+In this version, it's possible to set individual pixels using the new class **_BlueBitmap_**.
+
+It actually uses RAM Tiles instead of Flash Tile, which in turn allow to set an individual pixel within this tile.
+There are 256 RAM Tiles, thus, in a 16 x 16 tile arrangement, we could create a full canvas of 128 x 128 pixels.
+But those RAM Tiles can be any place in the 28x30 tile space.
+This allows to create, for instance, an animation such as Space Invaders (in the examples), or even create widgets for the user interface.
+
+### Main Methods are:
+```javascript
+void BlueBitmap::drawPixel(uint8_t x, uint8_t y, bool setReset) // to draw a pixel on any place of the screen
+void BlueBitmap::drawBitmap(uint8_t x, uint8_t y, uint8_t frameNum, bool setReset, int8_t color) // to draw a bitmap on the screen
+void BlueBitmap::drawBitmap8(uint8_t x, uint8_t y, uint8_t frameNum, bool setReset, int8_t color) // to fast draw of 8x8 or 16x8 bitmaps
+
+void setBlueVgaObject(BlueVGA &bvgaPtr) // to associate the vga object to drawing functions 
+
+// RAM Tiles can be split into two sections: RAM Tiles that are "safe" and won't be used in a drawPixel() 
+// and the rest that will be dynamically allocated to display pixels in the screen. By default all the tiles 
+// are available for drwaing pixels.
+void BlueBitmap::eraseRamTiles() 	// to reset the graphical environment - uses firstTile information
+void setFirstTile(uint8_t tile)		// to assign the Tile number that a graphical function can use to set a pixel 
+ 					// when all available tiles are used it will recycle back to this tile
+void setNextFreeTile(uint8_t tile)  	// to assign the Tile number that a graphical function can use to set a pixel
+ 					// used as next available tile for pixels
+```
+
+#### New Examples in Github:
+* **Space Invaders Animation Demo** - a nice auto-play Space Invaders Animation
+* **Elliptical Text Animation** - an animation of text moving in different elliptical paths
+* **graph Demo Sine Curve** - an slow motion animation of a sine curve drawing. At the end it changes to character view in order to help understanding how the graphical mode works.
+Top
+
 ### Some Examples
 
 Click the image below to watch it in action (you will be redirected to YouTube)
