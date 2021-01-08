@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera. 
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,21 +29,20 @@
 #include "bluevga.h"
 #include "font.h"
 
-/*
- * This is the smaller possible code for starting VGA and just displaying a plain blue screen, no text, with BlueVGA library!
- */
 
-// create a BlueVGA object using ASCII_FONT as bitmap for all the tiles (ASCII characters)
+// creates a BlueVGA object using ASCII_FONT as bitmap for all the tiles (ASCII characters)
+// by default displays a Blue Screen on VGA Monitor... 
+// the declaration of vga global variable starts VGA driver
 BlueVGA vga(ASCII_FONT);
 
 void setup() {
-  // by default displays a Blue Screen on VGA Monitor... the declaration of vga global variable starts VGA driver
-  vga.println("Hello World!!!");  // displays to the first line on screen
-  vga.waitVSync(120);             // blocks based on 1/60 of a second. 1 secnd = 60 as argument. Here it delays for 2 seconds
+  vga.println("Hello World!!!");  // displays thw first line on screen
+  vga.println();                  // goes to next line
+  vga.waitVSync(120);             // blocks based on 1/60 of a second. 1 second = 60 frames or VSyncs. Here it delays for 2 seconds
 }
 
 void loop() {
   vga.waitVSync(6);               // same as delay(100); -- based on 1/60 of second
-  vga.print("Hello World! ");     // displays text side by side until start scrolling
+  vga.print("Hello World! ");     // displays text side by side and then start scrolling up the screen
 }
 

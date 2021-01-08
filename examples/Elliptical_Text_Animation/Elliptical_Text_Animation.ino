@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera.
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -28,37 +28,36 @@
 
 #include "bluevga.h"
 #include "font.h"
-#include "bluebitmap.h"      // functions for drawing pixels in the screen in a limited way
+#include "bluebitmap.h"      // functions for drawing pixels in the screen using 256 RAM Tiles
 
 // USE_RAM means that we shall use an empty RAM space for 256 tiles of 8x8 pixels
-// create a BlueVGA object using RAM Tiles as bitmap for graphical usage
+// creates a BlueVGA object using RAM Tiles as bitmap for graphical usage
 BlueVGA vga(USE_RAM);
 
-// create an object that maps bitmap to a ASCII font 8x8 pixels
+// creates an object that maps bitmap to an ASCII font with 8x8 pixels
 BlueBitmap fontBitmap(8, 8, (uint8_t *)ASCII_FONT);
 
 
 void setup() {
-  // MUST set reference to our BlueVGA driver in order to make it work
-  BlueBitmap::setBlueVgaObject(vga);
   // clears the screen using blue background color with yellow as foreground color
-  vga.clearScreen(vga.getColorCode(RGB_YELLOW, RGB_BLUE), 0);                        // FG Color = Yellow || BG Color = Blue using 3 bits per color in format RGB0 (4 bits with a bit 0 = 0)
+  // FG Color = Yellow || BG Color = Blue using 3 bits per color in format RGB0 (4 bits with a bit 0 = 0)
+  BlueBitmap::clearGraphScreen(vga.getColorCode(RGB_YELLOW, RGB_BLUE));
 }
 
 void loop() {
   const char text[] = "BlueVGA";
   const uint8_t textLen = strlen(text);
 
-  // Vertical Radius proportion to the Horiaontal Radius and a change factor along time
+  // Vertical Radius proportion to the Horizontal Radius and a change its factor along time
   static float ellipseProp = -0.5, propDir = 0.2;   
-  // Ellipse coordinates descrition
+  // Ellipse coordinates description
   float h = 90.0;     // horizontal center 
   float k = 125.0;    // vertical center
-  float r = 50.0;     // radius of a circunference - ellipseProp will change vertical radius to create a ellipse
+  float r = 50.0;     // radius of a circunference. ellipseProp will change vertical radius to create a ellipse
 
   // goes around 360 degrees in radians (360 = 2PI) stepping by 5 degrees 
   for (float angule = 0; angule < TWO_PI; angule += (TWO_PI / 360 * 5)) { // 5 degrees change -- speed of the animation
-    // calculates the coordinates of the text based on a ellipse curve that changes on each loop() execution
+    // calculates the coordinates of the text based on an ellipse curve that changes its proportions on each loop() execution
     float textX = h + r * cos(angule);
     float textY = k + ellipseProp * r * sin(angule);
 
@@ -68,16 +67,14 @@ void loop() {
       fontBitmap.drawBitmap8((uint8_t) textX + i * 8, (uint8_t) textY, text[i], 1, vga.getColorCode(RGB_BLUE, RGB_BLUE));
     }
     
-    // the animation is excecutes 10 times per second...
-    vga.waitVSync(2); // blocks the execution until 6 frames are past. At 60 FPS (frames per second) 6/60s = 100 milliseconds
+    // the animation is excecuted 30 times per second... causing some optical ilusions on movement
+    vga.waitVSync(2); // blocks the execution until 2 frames are past. At 60 FPS (frames per second) 2/60s = 33 milliseconds
 
     // clears the screen using blue background color with yellow as foreground color
-    vga.clearScreen(vga.getColorCode(RGB_YELLOW, RGB_BLUE), 0);  // FG Color = Yellow || BG Color = Blue using 3 bits per color in format RGB0 (4 bits with a bit 0 = 0)
-    // Erase all the RAM Tiles used in drawing the screen - fresh start - all 256 tiles are free
-    BlueBitmap::eraseRamTiles();
+    BlueBitmap::clearGraphScreen(vga.getColorCode(RGB_YELLOW, RGB_BLUE));
   }
 
-  // cyclically changes the shape (propostions) of the ellipse
+  // cyclically changes the shape (proportions) of the ellipse
   ellipseProp += propDir;
   if (ellipseProp > 2 and propDir > 0) {
     propDir = -propDir;

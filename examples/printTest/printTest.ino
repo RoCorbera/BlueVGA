@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera.
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -33,9 +33,9 @@
 BlueVGA vga(ASCII_FONT);
 
 void setup() {
-  ScreenSetup();        // performs initial screen caracter drawings
+  ScreenSetup();        // performs initial screen caracter drawing
   vga.waitVSync(60*3);  // same as delay(3000) - waits 60 VGA frames * 3 -- in 60 VGA frames per second
-  Animation();          // goes for a forever loop...
+  Animation();          // forever loop...
 }
 
 
@@ -54,10 +54,10 @@ void Animation (void) {
 
   while (true) {   // forever ... sort of replaces loop()
 
-    // the animation is excecutes 2 times per second...
-    vga.waitVSync(4); // blocks the execution until 4 frames are past. At 60 FPS (frames per second) 4/60s = 67 milliseconds
+    // blocks the execution until 4 frames are past. 
+    vga.waitVSync(4); // At 60 FPS (frames per second) 4/60s = 67 milliseconds
 
-    // TESTING CODE....
+    // TESTING CODE.... uncomment it to use it
     //static float x = 3.14156592, inc = 5;
     //vga.setTextTab(5);
     //vga.setTextWrap(false);
@@ -70,7 +70,7 @@ void Animation (void) {
     
     uint8_t currentCursorColor = vga.getTextColor();
     uint8_t fc = currentCursorColor & 0xF;   // color 8 bits format: rgb0rgb0 BG-FG 4 bits each
-    // rotates forground and backgorund colors.
+    // rotates foreground and backgorund colors.
     fc += 2; // colors are 4 bits, but only 3 most significative bit are used, thus it is always a pair number
     // foreground color goes from 0 to 14 -- background color stays 0 (black)
     if (fc > 14) { // it goes up to 14 (0xE) = white
@@ -78,15 +78,15 @@ void Animation (void) {
     }
 
     vga.setTextColor(fc, 0);                 // keep background on 0 (black)
-    vga.println(lineNumber++, HEX);          // println() will force screen scroll!
+    vga.println(lineNumber++, HEX);          // println() will force screen scroll up!
 
     lastLineNumber = ++lastLineNumber & 0xF; // increments and keeps the range in 0..15 for a single color index in the sequence we defined
     // prints a number (color code) with leading '0's and 2 digits, after scrolling....
-    vga.printInt (24, 29, lastLineNumber, vga.getColorCode(RGB_BLACK, RGB_WHITE), true, 2);
+    vga.printInt (24, 29, lastLineNumber, vga.getColorCode(RGB_BLACK, RGB_WHITE), true, 2); // helper function to print integers
 
-    if (!lineNumber) { // on byte overflow, reset the screen
+    if (!lineNumber) {                       // on byte overflow, reset the screen
       ScreenSetup();
-      vga.setTextCursor(0, 0);  // set cursor to default top left corner postiion
+      vga.setTextCursor(0, 0);               // set cursor to default top left corner postiion
     }
   }
 }
@@ -106,7 +106,8 @@ void ScreenSetup (void) {
   
   vga.printStr(0, 20, vga.getColorCode(RGB_YELLOW, RGB_BLACK), (char *)"1234567890123456789012345678");
 
-  for (uint8_t i = 0; i < VRAM_WIDTH; i++) {  // draws charcter #127 (checker) in 3 rows in the screen, alternating colors, keeping Red as main color
+  // draws charcater #127 (checker) in 3 rows in the screen, alternating colors, keeping Red as main color
+  for (uint8_t i = 0; i < VRAM_WIDTH; i++) {  
     // there are 3 ways for drawing a single character in the screen, using setTile(...):
     vga.setTile(i, 22, 127, vga.getColorCode(RGB_RED, RGB_YELLOW));   // using setTile(...) with a color at last paramenter
     vga.setTile(i, 23, 127, RGB_BLACK, RGB_RED);                      // using setTile(...) with arguments separated for foreground and background colors

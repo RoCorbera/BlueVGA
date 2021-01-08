@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera. 
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,12 +29,12 @@
 #include "bluevga.h"
 #include "font.h"
 
-// create a BlueVGA object using ASCII_FONT as bitmap for all the tiles
+// creates a BlueVGA object using ASCII_FONT as bitmap for all the tiles
 BlueVGA vga(ASCII_FONT);
 
 
 void setup() {
-  // VGA already started by constructor of BlueVGA object ... nothing to be done!
+  // VGA already started by the constructor of BlueVGA object ... nothing to be done!
 }
 
 void loop() {
@@ -42,7 +42,7 @@ void loop() {
   const uint8_t textLen = strlen(hello);
   static uint8_t textX = 0;
 
-  // the animation is excecutes 10 times per second...
+  // the animation is excecuted 10 times per second...
   vga.waitVSync(6); // blocks the execution until 6 frames are past. At 60 FPS (frames per second) 6/60s = 100 milliseconds
 
   vga.clearScreen(vga.getColorCode(RGB_YELLOW, RGB_BLUE));                        // FG Color = Yellow || BG Color = Blue using 3 bits per color in format RGB0 (4 bits with a bit 0 = 0)

@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera.
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -29,12 +29,12 @@
 #include "bluevga.h"
 #include "font.h"
 
-// create a BlueVGA object using ASCII_FONT as bitmap for all the tiles (ASCII characters)
+// creates a BlueVGA object using ASCII_FONT as bitmap for all the tiles (ASCII characters)
 BlueVGA vga(ASCII_FONT);
 
 void setup() {
-  ScreenSetup();    // performs initial screen caracter drawings
-  Animation();      // goes for a forever loop...
+  ScreenSetup();    // performs initial screen character drawing
+  Animation();      // forever loop...
 }
 
 
@@ -45,17 +45,17 @@ void loop() {
 
 
 /*
-    Performs a simple color animation +
+    Performs a simple color animation
 */
 void Animation (void) {
 
   static uint8_t lastLineColor = 1;
-  // defines a sequence of colors for the animation
+  // defines an order and sequence of colors for the animation
   const uint8_t colors[8] = {RGB_RED, RGB_YELLOW, RGB_GREEN, RGB_CYAN, RGB_BLUE, RGB_MAGENTA, RGB_BLACK, RGB_WHITE};
 
   while (true) {   // forever ... sort of replaces loop()
 
-    // the animation is excecutes 2 times per second...
+    // the animation is excecuted 2 times per second...
     vga.waitVSync(30); // blocks the execution until 30 frames are past. At 60 FPS (frames per second) 30/60s = 500 milliseconds
 
     // gets the current Foreground and Backgorund colors for a specific position in screen
@@ -65,7 +65,7 @@ void Animation (void) {
     uint8_t fc = vga.getFGColor(x, 3);
     uint8_t bc = vga.getBGColor(x, 3);
 
-    // rotates forground and backgorund colors.
+    // rotates foreground and background colors.
     bc += 2; // colors are 4 bits, but only 3 most significative bit are used, thus it is always a pair number
     // Background goes from 0 to 14 and then foreground changes
     if (bc > 14) { // it goes up to 14 (0xE) = white
@@ -74,8 +74,10 @@ void Animation (void) {
     }
     if (fc > 14) fc = 0;
 
-    // prints "last liine" at the bottom of the screen and rotates its color as defined in the array colors[]
-    vga.setColorRegion(x, 3, x + 16, 8, vga.getColorCode(fc, bc));
+    // changes ASCII chart colors
+    vga.setColorRegion(x, 3, x + 16 - 1, 8, vga.getColorCode(fc, bc));
+
+    // prints "last line" at the bottom of the screen and rotates its color as defined in the array colors[]
     lastLineColor = ++lastLineColor & 7; // increments and keeps the range in 0..7 for a single color index in the sequence we defined
     x = (VRAM_WIDTH - 13) / 2;
     vga.setColorRegion(x, 29, x + 13, 29, vga.getColorCode(colors[lastLineColor], 0)); // foreground, background colors
@@ -90,7 +92,7 @@ void ScreenSetup (void) {
   vga.clearScreen();
   vga.printStr(0, 20, vga.getColorCode(RGB_YELLOW, RGB_BLACK), (char *)"12345678901234567890123456789012");
 
-  for (uint8_t i = 0; i < VRAM_WIDTH; i++) {  // draws charcter #127 (checker) in 3 rows in the screen, alternating colors, keeping Red as main color
+  for (uint8_t i = 0; i < VRAM_WIDTH; i++) {  // draws character #127 (checker) in 3 rows in the screen, alternating colors, keeping Red as main color
     // there are 3 ways for drawing a single character in the screen, using setTile(...):
     vga.setTile(i, 22, 127, vga.getColorCode(RGB_RED, RGB_YELLOW));   // using setTile(...) with a color at last paramenter
     vga.setTile(i, 23, 127, RGB_BLACK, RGB_RED);                      // using setTile(...) with arguments separated for foreground and background colors
@@ -106,7 +108,7 @@ void ScreenSetup (void) {
   vga.printStr((VRAM_WIDTH - 16) / 2, 0, vga.getColorCode(RGB_YELLOW, RGB_BLACK), (char *)"STM32 Core DEMO!");
 #endif
 
-  // prints all possible colors with text in the screen
+  // prints all possible colors using text in the screen
   uint8_t xCenter = (VRAM_WIDTH - 14) / 2;
   vga.printStr(xCenter, 11, vga.getColorCode(RGB_RED, RGB_BLACK), (char *)    "-----RED------");
   vga.printStr(xCenter, 12, vga.getColorCode(RGB_MAGENTA, RGB_BLACK), (char *)"---MAGENTA----");
@@ -121,8 +123,9 @@ void ScreenSetup (void) {
   // prints the basic ASCII table in the screen
   for (uint8_t y = 3; y < 9; y++)
     for (uint8_t x = (VRAM_WIDTH - 16) / 2; x < (VRAM_WIDTH - 16) / 2 + 16; x++) {
-      vga.setTile(x, y, 26 + x + (y - 3) * 16);
+      vga.setTile(x, y, ' ' - (VRAM_WIDTH - 16) / 2 + x + (y - 3) * 16);
       vga.setColor(x, y, vga.getColorCode(RGB_WHITE, RGB_BLACK));
     }
 }
+
 

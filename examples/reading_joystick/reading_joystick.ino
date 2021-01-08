@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera. 
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -35,7 +35,7 @@
 Joystick joystick(PB0, PB0, PB1, PB1, PB10);
 
 
-// create a BlueVGA object using ASCII_FONT as bitmap for all the tiles (ASCII characters)
+// creates a BlueVGA object using ASCII_FONT as bitmap for all the tiles (ASCII characters)
 BlueVGA vga(ASCII_FONT);
 
 void setup() {
@@ -51,11 +51,11 @@ void setup() {
 void loop() {
   vga.waitVSync(6); // equivalent to Arduino delay(100); -- 6 * 1/60 of second
 
-  // displays reading of analog port PB0, PB1 used to connect VRX, VRY pins of the analog joystick as declared above "Joystick joystick(PB0, PB0, PB1, PB1, PB10);"
+  // displays values of analog port PB0, PB1 used to connect VRX, VRY pins of the analog joystick as declared above "Joystick joystick(PB0, PB0, PB1, PB1, PB10);"
   vga.printInt(22, 9, analogRead(PB0), vga.getColorCode(RGB_MAGENTA, RGB_BLACK), true, 4);
   vga.printInt(22, 7, analogRead(PB1), vga.getColorCode(RGB_MAGENTA, RGB_BLACK), true, 4);
 
-  // check if Joystick has its button pressed and displays yes or no, accordingly to its state
+  // checks if Joystick has its button pressed and displays yes or no, accordingly to its state
   if (joystick.firePressed())
     vga.printStr(21, 11, vga.getColorCode(RGB_GREEN, RGB_BLACK), (char *)"yes");
   else

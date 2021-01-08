@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera. 
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -36,7 +36,7 @@
 // this video at https://www.youtube.com/watch?v=f8iaW5YcsNE shows the joystick used in this scketch
 Joystick joystick(PB0, PB0, PB1, PB1, PB10);
 
-// create a BlueVGA object using GRAPH_ASCII_FONT as bitmap for all the tiles
+// creates a BlueVGA object using GRAPH_ASCII_FONT as bitmap for all the tiles
 BlueVGA vga(GRAPH_ASCII_FONT);
 
 // Colors in Red-Green-Blue RGB 3 bits format - 8 possible colors
@@ -75,7 +75,7 @@ void setup() {
 
 
 void drawGameScr(void) {
-  // little animation for draqing the borders
+  // little animation for drawing the fence with '#'
   for (uint8_t i = 0; i < 24; i++) {
     vga.setTile(2 + i, 4, '#', BORDER_COLOR);
     vga.setTile(2, 4 + i, '#', BORDER_COLOR);
@@ -89,13 +89,13 @@ void drawGameScr(void) {
 }
 
 void updateScore(uint16_t sc, uint16_t hi) {
-  // top os screen has score and hiscores (yellow and white)
+  // top of screen has score and hiscores (yellow and white)
   vga.printStr(0, 2, 0x0C, (char *)"SCORE:000000  HISCORE:000000");
   vga.printInt(6, 2, sc, 0x0E, true, 6);
   vga.printInt(22, 2, hi, 0x0E, true, 6);
 }
 
-// little animations for populating random mushroosm, flies and beetles
+// little animation for populating random mushroosm, flies and beetles
 void populateScr(uint8_t numElements) {
   randomSeed(analogRead(PA4) + vga.getFrameNumber());
   // animation for mushrooms from function paramenter
@@ -147,7 +147,7 @@ void runGame(int32_t &score, int32_t &hiscore) {
   bool dead = false;
   uint8_t snkInc = 0;
 
-  // prepares initial screen drawings
+  // prepares initial screen drawing
   vga.clearScreen();
   updateScore(score, hiscore);
   drawGameScr();
@@ -155,14 +155,14 @@ void runGame(int32_t &score, int32_t &hiscore) {
   populateScr(20);
   vga.waitVSync(120);
 
-  nextTime = snakeSpeed;  // ticks to move the snake in 1/60 of second
-  // run the game while player doesn't get killed
+  nextTime = snakeSpeed;  // remaining ticks to move the snake in 1/60 of second
+  // runs the game while player doesn't get killed
   while (!dead) {
     vga.waitVSync(); // holds up to the start of next frame - it keeps the screen solid and clean
 
-    if (joystick.firePressed()) break; // player wants to quit by pressing joystick switch...
+    if (joystick.firePressed()) break; // player may want to quit by pressing joystick switch...
 
-    if (!numBeetles && !numFlies) {  // wave finished? then restart it and speed it up!
+    if (!numBeetles && !numFlies) {  // wave finished? then restart it and speed up the game!
       populateScr(10);
       numFlies = 5;
       numBeetles = 15;
@@ -196,11 +196,11 @@ void runGame(int32_t &score, int32_t &hiscore) {
     if (nextTime == 0) {  // is it the right time to move the snake?
       nextTime = snakeSpeed;
 
-      // move snake
+      // moves snake
       uint8_t nextPositionTile = vga.getTile(headPosX + dx, headPosY + dy);
       bool shouldMove = true;
 
-      // check what snake it eating or where is going to get positioned
+      // checks what snake is about to eat and if it is going to get positioned
       uint8_t bonus = 0;
       switch (nextPositionTile) {
         case MUSHROOM_TILE:             // mushroom.... sorry, you're dead!
@@ -209,7 +209,7 @@ void runGame(int32_t &score, int32_t &hiscore) {
           break;
         case FLY_TILE:                 // Fly! increases score faster!
           scoreInc += 1;
-          snkInc += 1;
+          snkInc += 1;                 // snake gets longer
           bonus = (150 + 6 * scoreInc) / 10;
           numFlies--;
         case BEETLE_TILE:             // case follow on
@@ -219,7 +219,7 @@ void runGame(int32_t &score, int32_t &hiscore) {
             bonus = (100 + 5 * scoreInc) / 10;
             numBeetles--;
           }
-          // Litle animation for eating it
+          // Litle animation for eating flies and beetles
           for (uint8_t i = 'A'; i < 'K'; i++) {
             score += bonus;
             if (score > hiscore) hiscore = score;
@@ -229,7 +229,7 @@ void runGame(int32_t &score, int32_t &hiscore) {
           }
           vga.setTile(headPosX + dx, headPosY + dy, ' ');
           break;
-        default:  // did you get to the border or are you going to eat yourself?
+        default:  // did you get to the fence?  are you going to eat yourself?
           if (nextPositionTile == '#' || nextPositionTile == SNK_BODY_TILE ||
               vga.getTile(headPosX + dx + 1, headPosY + dy) == SNK_BODY_TILE ||
               vga.getTile(headPosX + dx - 1, headPosY + dy) == SNK_BODY_TILE ||
@@ -243,20 +243,20 @@ void runGame(int32_t &score, int32_t &hiscore) {
       }
 
       if (!numBeetles && !numFlies) {        // very special case...
-        shouldMove = false;  // a chance for the last impossible to eat insect
+        shouldMove = false;  // a chance to eat that hidden insect!
       }
 
-      if (shouldMove) {           // move the snake!
-        // move snake head
+      if (shouldMove) {           // moves the snake!
+        // moves snake head
         uint8_t lastSnkHead = vga.getTile(headPosX, headPosY);
         vga.setTile(headPosX, headPosY, SNK_BODY_TILE, SNK_BODY_COLOR);
         headPosX += dx;
         headPosY += dy;
         vga.setTile(headPosX, headPosY, lastSnkHead, SNK_HEAD_COLOR);
-        // move tail is not body size has not grown
+        // moves tail if body size has not grown
         if (snkInc) snkInc--;
         else {
-          // move tail and reposition tail again
+          // moves tail and finds tail again
           vga.setTile(tailPosX, tailPosY, ' ', 0);
           if (vga.getTile(tailPosX - 1, tailPosY) == SNK_BODY_TILE)  tailPosX -= 1;
           else if (vga.getTile(tailPosX + 1, tailPosY) == SNK_BODY_TILE)  tailPosX += 1;
@@ -266,7 +266,7 @@ void runGame(int32_t &score, int32_t &hiscore) {
       }
     }
   }
-  // died... some video effect with background color... nice effect!
+  // died... some colorful nice video effect with background color...
   for (int8_t i = 25; i >= 0; i--) {
     for (uint8_t y = 5; y < 27; y++)
       for (uint8_t x = 3; x < 25; x++)
@@ -329,4 +329,3 @@ void runStarting(void) {
 void loop() {
 // everything is within setup()
 }
-

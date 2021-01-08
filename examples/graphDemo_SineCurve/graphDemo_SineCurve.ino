@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera.
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,11 +27,11 @@
 */
 
 #include "bluevga.h"
-#include "font.h"            // import a ASCII Flash font bitmap
-#include "bluebitmap.h"      // functions for drawing pixels in the screen in a limited way
+#include "font.h"            // imports a ASCII Flash font bitmap
+#include "bluebitmap.h"      // functions for drawing pixels in the screen
 
 // USE_RAM means that we shall use an empty RAM space for 256 tiles of 8x8 pixels
-// create a BlueVGA object using RAM Tiles as bitmap for graphical usage
+// creates a BlueVGA object using RAM Tiles as bitmap for graphical usage
 BlueVGA vga(USE_RAM);
 
 // Some helpfull constants for radians calculations
@@ -41,7 +41,7 @@ BlueVGA vga(USE_RAM);
 #define DEG_TO_RAD 0.017453292519943295769236907684886
 #define RAD_TO_DEG 57.295779513082320876798154814105
 
-// denine number of pixels of the whole screen
+// defines number of pixels of the whole screen
 #define SCR_WIDTH  VRAM_WIDTH * 8   // 28 * 8 = 224 pixels
 #define SCR_HEIGHT VRAM_HEIGHT * 8  // 30 * 8 = 240 pixels
 
@@ -58,37 +58,33 @@ BlueVGA vga(USE_RAM);
 const char title[] = "SINE CURVE GRAPHICS";
 
 void setup() {
-  // fill up the screen with tileID zero using yellow as foreground color over black as background color
-  // Necessary to use graphical functions
-  vga.clearScreen(vga.getColorCode(RGB_YELLOW, RGB_BLACK), 0);
+  // fills up the screen with tileID zero using yellow as foreground color over black as background color
+  BlueBitmap::clearGraphScreen(vga.getColorCode(RGB_YELLOW, RGB_BLACK));
 
-  // create an object that maps bitmap to a ASCII font 8x8 pixels
+  // creates an object that maps bitmap to a ASCII font 8x8
   BlueBitmap fontBitmap(8, 8, (uint8_t *)ASCII_FONT);
 
-  // MUST set reference to our BlueVGA driver in order to make it work
-  BlueBitmap::setBlueVgaObject(vga);
-  
-  // draws pixels for the title in cyan
+  // draws pixels of the title in cyan
   uint8_t titleLen = strlen(title);
   for (uint8_t i = 0; i < titleLen; i++)
     fontBitmap.drawBitmap8((VRAM_WIDTH - titleLen) / 2 * 8 + i * 8, 0, title[i], 1, vga.getColorCode(RGB_CYAN, RGB_BLACK));
 
-  // Draws two lines, a centered y axis and a left x axis
+  // Draws two lines, a left y axis and a centered x axis
   for (uint8_t x = 0; x < SCR_WIDTH; x++) BlueBitmap::drawPixel(x, YCENTER);
   for (uint8_t y = YCORNER; y < YCORNER + CANVASH; y++) BlueBitmap::drawPixel(XCORNER, y);
 
   // works as a delay(2000);
   // blocks the execution until 120 frames are past.
-  // At 60 FPS (frames per second) 120/60s = 2 seconds
+  // At 60 FPS (frames per second) 120/60 = 2 seconds
   vga.waitVSync(120);
 }
 
 void loop() {
 
-  // TWO_PI is 360 degrees in radians - iterate at CANVASW * 4 times over a sine cycle
+  // TWO_PI is 360 degrees in radians - iterate at CANVASW * 4 times over a sine curve
   for (float angule = 0; angule < TWO_PI; angule += (TWO_PI / CANVASW / 4)) {
 
-    // this delay will make it feel like an animation
+    // this delay creates a drawing animation
     vga.waitVSync(2); // delays loop by 1/30 sencond
 
     // calculates angle proportional to Canvas width in pixels
@@ -99,11 +95,12 @@ void loop() {
     // and transladate it to the center of the graphic
     int16_t ypos = sin(angule) * CANVASH / 2 + YCENTER;
 
-    // draw pixel by pixel slowly as in an animation
+    // draws pixel by pixel
     BlueBitmap::drawPixel(xpos, ypos);
   }
 
   vga.waitVSync(120); // same as delay(2000); - hold it for 2 seconds
+
   // change the font of tile to a flash ASCII_FONT, just to demonstrate how tile are
   // allocated when drawing pixels. Just for demonstration effect.
   vga.setFontBitmap((uint8_t *)font8x8_ic8x8u + 32 * 8);  // right after ' ' (ASCII 0x20 = 32)
