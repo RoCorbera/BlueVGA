@@ -4,10 +4,10 @@ Demo video here: [http://www.youtube.com/watch?v=nNWkdR4P_UA](http://www.youtube
 
 This work is licensed under a [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/).
 
-# BlueVGA v1.2
+# BlueVGA v1.3
 VGA library for STM32F103C8T6 (BluePill) that can manipulate a 224x240 pixels screen with 8x8 Tiles (or Characters) from a user defined bitmap font
 
-In version 1.2 there is a graphical mode that allows to manipulate pixels as well. Actually it uses 256 RAM Tiles that can be positioned any place in the screen and, by this way, it is possible to set individual pixels.
+In version 1.3 there is a graphical mode that allows to manipulate pixels as well. Actually it uses 256 RAM Tiles that can be positioned any place in the screen and, by this way, it is possible to set individual pixels.
 
 This is not a full screen pixel setting, but allows for several graphical applications. Please check the examples in this library to learn more about it.
 
