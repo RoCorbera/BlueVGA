@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera.
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,9 +27,9 @@
 */
 
 #include "Arduino.h"
+#include "bluevgadriver.h"
 #include "bluebitmap.h"
 
-BlueVGA *BlueBitmap::blueVgaObject = 0;
 uint8_t BlueBitmap::nextFreeTile = 1;       // Tile 0 is used as default background
 uint8_t BlueBitmap::firstFreeTile = 1;      // reference index of the first usable tile for drwaing pixels on the screen
 uint8_t BlueBitmap::ramFont[256 * 8] = {0}; // RAM Font Bitmap used to draw pixels
@@ -39,7 +39,6 @@ void BlueBitmap::drawPixel(uint8_t x, uint8_t y, bool setReset) {
   // clip x and y to the limits of the screen, just in case...
   x %= (VRAM_WIDTH << 3);
   y %= (VRAM_HEIGHT << 3);
-  if (!blueVgaObject) return;
 
   // get the tile position in the screen
   uint8_t xTile = (x >> 3);
@@ -50,11 +49,11 @@ void BlueBitmap::drawPixel(uint8_t x, uint8_t y, bool setReset) {
   uint8_t yPos = y & 7;
 
   // is the Tile we will draw already used for drawing pixel or we must alocate a new tile from the pool?
-  uint8_t tileIdx = blueVgaObject->getTile(xTile, yTile);
+  uint8_t tileIdx = TRAM[yTile][xTile];
   if (!tileIdx) {     // we must alocate a free tile to draw the pixel
     tileIdx = nextFreeTile++;
     // set the allocated tile in the screen
-    blueVgaObject->setTile(xTile, yTile, tileIdx);
+    TRAM[yTile][xTile] = tileIdx;
     // if we used all possible free tiles, we just restart it... is it good?
     if (!nextFreeTile) nextFreeTile = firstFreeTile;
   }
@@ -79,11 +78,34 @@ void BlueBitmap::eraseRamTiles() {
 }
 
 
+void BlueBitmap::clearGraphScreen(uint8_t color) {
+  // reset RAM Tiles pool and erase them
+  BlueBitmap::eraseRamTiles();
+  // Fill the screen with tile ZERO - necessary to get the bitmap system working
+  uint32_t *TRAM32Bits = (uint32_t *) TRAM;
+  // set tile color in the screen
+  uint32_t *CRAM32Bits = (uint32_t *) CRAM;
+  uint32 color32Bits = color << 24 | color << 16 | color << 8 | color;
+  // faster using 32 bits operations
+  for (uint8_t y = 0; y < VRAM_HEIGHT; y++) {
+    // 4 x 7 = 28 tiles
+    *TRAM32Bits++ = 0; *TRAM32Bits++ = 0; *TRAM32Bits++ = 0; *TRAM32Bits++ = 0; 
+    *TRAM32Bits++ = 0; *TRAM32Bits++ = 0; *TRAM32Bits++ = 0;
+    // 4 x 7 = 28 Colors
+    *CRAM32Bits++ = color32Bits; *CRAM32Bits++ = color32Bits; *CRAM32Bits++ = color32Bits; 
+    *CRAM32Bits++ = color32Bits; *CRAM32Bits++ = color32Bits; *CRAM32Bits++ = color32Bits; 
+    *CRAM32Bits++ = color32Bits;
+  }
+}
+
 void BlueBitmap::copyFont2RamTile (uint8_t flashFontChar, const uint8_t *fontBitmap, uint8_t ramFontTileNumber) {
   if (!fontBitmap) return;
 
-  for (uint8_t i = 0; i < 8; i++)
-    ramFont[(ramFontTileNumber << 3) + i] = fontBitmap[(flashFontChar << 3) + i];
+  // faster using 32 bits operations
+  uint32_t *ramTile32Bits = (uint32_t *) (ramFont + (ramFontTileNumber << 3));
+  uint32_t *fontBitmap32Bits = (uint32_t *) (fontBitmap + (flashFontChar << 3));
+  *ramTile32Bits++ = *fontBitmap32Bits++;
+  *ramTile32Bits++ = *fontBitmap32Bits++;
 }
 
 
@@ -93,7 +115,6 @@ void BlueBitmap::copyFont2RamTile (uint8_t flashFontChar, const uint8_t *fontBit
 // IMPORTANT: be aware that setting a black pixel, for instance, over a black backgroud will not produce any visual effect
 // Handles any size of Bitmap to draw, but it is slow and CPU intensive
 void BlueBitmap::drawBitmap(uint8_t x, uint8_t y, uint8_t frameNum, bool setReset, int8_t color) {
-  if (!blueVgaObject) return;
   if (!bitmap || !width || !height) return;
   // clip x and y to the limits of the screen, just in case...
   x %= (VRAM_WIDTH << 3);
@@ -115,7 +136,7 @@ void BlueBitmap::drawBitmap(uint8_t x, uint8_t y, uint8_t frameNum, bool setRese
     uint8_t yTile = (y >> 3);
     for (uint8_t y = yTile; y < yTile + (height >> 3) + 1; y++)
       for (uint8_t x = xTile; x < xTile + (width >> 3) + 1; x++)
-        blueVgaObject->setFGColor(x, y, color);
+        CRAM[y][x] = color;
   }
 }
 
@@ -126,7 +147,6 @@ void BlueBitmap::drawBitmap(uint8_t x, uint8_t y, uint8_t frameNum, bool setRese
 // IMPORTANT: be aware that setting a black pixel, for instance, over a black backgroud will not produce any visual effect
 // Very special case of Bitmap here. ONLY 8x8 or 16x8 bitmaps, but very FAST!
 void BlueBitmap::drawBitmap8(uint8_t x, uint8_t y, uint8_t frameNum, bool setReset, int8_t color) {
-  if (!blueVgaObject) return;
   if (!bitmap || !width || !height) return;
 
   // clip x and y to the limits of the screen, just in case...
@@ -155,15 +175,15 @@ void BlueBitmap::drawBitmap8(uint8_t x, uint8_t y, uint8_t frameNum, bool setRes
     uint8_t yPosAux = th ? 0 : yPos;           // upper tile? shall we start on yPos or 0?
     for (uint8_t tw = 0; tw < tilesW; tw++) {  // tilesW will be 1, 2 ou 3...
       // is the tile at the position equal to zero? We must replace it with a new RAM Tile from the pool
-      uint8_t tileIdx = blueVgaObject->getTile(xTile + tw, yTile + th);
+      uint8_t tileIdx = TRAM[yTile + th][xTile + tw];
       if (tileIdx == 0) {
         tileIdx = nextFreeTile++;
-        blueVgaObject->setTile(xTile + tw, yTile + th, tileIdx);
+        TRAM[yTile + th][xTile + tw] = tileIdx;
         if (!nextFreeTile) nextFreeTile = firstFreeTile;
       }
 
       if (((uint8_t)color) < 16) {   // skip this if color = -1 (DO_NOT_PAINT_COLOR)
-        blueVgaObject->setFGColor(xTile + tw, yTile + th, color);
+        CRAM[yTile + th][xTile + tw] = color;
       }
 
       // find the right byte on ramFont bitmap and set or reset the pixel

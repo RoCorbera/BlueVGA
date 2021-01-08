@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera. 
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -62,6 +62,11 @@ uint8_t CRAM [VRAM_HEIGHT][VRAM_WIDTH] __attribute__((aligned(32))); // Color VR
 
 uint8_t *TBitmap;
 
+void sendScanLine(void) __attribute__((aligned(32)));
+void scanLine(uint8_t *Tiles, uint8_t *Colors, const uint8_t *Bitmap, const uint8_t *gpio, uint8_t *Buffer) __attribute__((aligned(32)));
+
+
+// function size 4480
 void scanLine(uint8_t *Tiles, uint8_t *Colors, const uint8_t *Bitmap, const uint8_t *gpio, uint8_t *Buffer) {
   // assembly for sending the scanline to VGA Monitor using the 3 most significant bits for Red, Green and Blue
   asm volatile (
@@ -109,6 +114,7 @@ void scanLine(uint8_t *Tiles, uint8_t *Colors, const uint8_t *Bitmap, const uint
     "  ror r9, r9, #8              \n\t"
     "  and r6, r5, #4              \n\t"
     "  lsl r6, r9, r6              \n\t"
+    "  nop                         \n\t"
     "  strb r6, [r3]               \n\t"
     ".rept 7                       \n\t"
     "  nop                         \n\t"
@@ -221,14 +227,14 @@ void video_init(uint8_t flashFont) {
   TIM1_REG->PSC = 0;
   TIM1_REG->CNT = 0;
   TIM1_REG->ARR = 2287;
-  TIM1_REG->CCR2 = 142;
+  TIM1_REG->CCR2 = 275;
   TIM1_REG->CCR1 = flashFont ? 10 : 135;
   TIM1_REG->CCMR1 = 0x7800;
   
   TIM4_REG->CR1 = 0x80;
   TIM4_REG->CCER = 0x1;
   TIM4_REG->PSC = 0;
-  TIM4_REG->ARR = 525;
+  TIM4_REG->ARR = 524;
   TIM4_REG->CNT = 0;
   TIM4_REG->CCR1 = 1;
   TIM4_REG->CCMR1 = 0x0078;

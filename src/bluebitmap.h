@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright Â© 2017-2020 Rodrigo Patricio Garcia Corbera. 
+    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera. 
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -52,7 +52,7 @@ class BlueBitmap {
     static uint8_t firstFreeTile;      // reference index of the first usable tile for drwaing pixels on the screen
 
   public:
-    // this function dynamicaly allocates RAM tiles from ramFont when necessary and set it to the position
+    // this function dinamicaly allocates RAM tiles from ramFont when necessary and set it to the position
     // where the pixel will be set or reset
     // the control of what tiles ar already allocated is done with firstFreeTile and nextFreeTile
     // It works as a circular buffer, thus if we set too many pixels apart from each other, we can 
@@ -79,6 +79,7 @@ class BlueBitmap {
     // important note is that usually tile 0 is used to fill al the screen with a pattern
     // that usually is a blank character such as ' '
     static void eraseRamTiles();
+    static void clearGraphScreen(uint8_t color = ((RGB_YELLOW << 4) | RGB_BLUE));  // Yellow over blue background
 
     // simple constructors, no desctructor needed
     BlueBitmap(uint8_t w, uint8_t h, uint8_t *b) : width(w), height(h), bitmap(b) {};
@@ -90,8 +91,6 @@ class BlueBitmap {
     }
     
     // static functions for setting BlueVGA driver object and RAM Tile splitting settting
-    static void setBlueVgaObject(BlueVGA &bvgaPtr) { blueVgaObject = &bvgaPtr; }
-    static BlueVGA* getBlueVgaObject() { return blueVgaObject; }
     static void setFirstTile(uint8_t tile) { firstFreeTile = tile; }
     static uint8_t getFirstTile() { return firstFreeTile; }
     static void setNextFreeTile(uint8_t tile) { nextFreeTile = tile; }
