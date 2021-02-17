@@ -10,7 +10,7 @@
        CPU Speed(MHz) 72MHz (Normal)
 
     Author Rodrigo Patricio Garcia Corbera (rocorbera@gmail.com)
-    Copyright © 2017-2021 Rodrigo Patricio Garcia Corbera.
+    Copyright Â© 2017-2021 Rodrigo Patricio Garcia Corbera.
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -85,7 +85,7 @@ void BlueBitmap::clearGraphScreen(uint8_t color) {
   uint32_t *TRAM32Bits = (uint32_t *) TRAM;
   // set tile color in the screen
   uint32_t *CRAM32Bits = (uint32_t *) CRAM;
-  uint32 color32Bits = color << 24 | color << 16 | color << 8 | color;
+  uint32_t color32Bits = color << 24 | color << 16 | color << 8 | color;
   // faster using 32 bits operations
   for (uint8_t y = 0; y < VRAM_HEIGHT; y++) {
     // 4 x 7 = 28 tiles
