@@ -14,7 +14,7 @@ This is not a full screen pixel setting, but allows for several graphical applic
 This graphical mode can be used to create some animation such as in the Space_Invaders_Animation_Demo sketch found in examples - screenshot:
 
 
-![Space Invaders Screen Shot](https://rogabeweb.mybluemix.net/images/SpaceInvaders.png)
+![Space Invaders Screen Shot](https://github.com/RoCorbera/BlueVGA/blob/master/images/bluevga-SpaceInvaders.png)
 
 ## How to use it with Arduino IDE
 This library was designed to work with Arduino IDE using the STM32F103C8, aka [Bluepill](https://stm32duinoforum.com/forum/wiki_subdomain/index_title_Blue_Pill.html)
@@ -207,7 +207,7 @@ void loop() {
 
 Result of this sketch:
 
-![Hello World](https://github.com/RoCorbera/BlueVGA/blob/master/images/HelloWorld.jpg)
+![Hello World](https://github.com/RoCorbera/BlueVGA/blob/master/images/HelloWorld.png)
 
 
 ### Documentation and functions
