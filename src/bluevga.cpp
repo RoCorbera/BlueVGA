@@ -46,6 +46,9 @@ uint32_t BlueVGA::getFrameNumber() {
   return frameNumber;
 }
 
+uint32_t BlueVGA::getScanLineNumber() {
+   return scanLineCounter;
+}
 
 void BlueVGA::setFontBitmap(const uint8_t *bmap) {
   bool flashFont = ((uint32_t) bmap) < 0x20000000;
