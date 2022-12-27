@@ -56,6 +56,7 @@
 #include "bluevgadriver.h"
 
 volatile uint32_t frameNumber = 0;
+volatile uint32_t scanLineCounter = 0;
 
 uint8_t TRAM [VRAM_HEIGHT][VRAM_WIDTH] __attribute__((aligned(32))); // VRAM with static Tiles of 8 x 8 pixels
 uint8_t CRAM [VRAM_HEIGHT][VRAM_WIDTH] __attribute__((aligned(32))); // Color VRAM - 8 + 8 colors = 4bits + 4bits (Foreground + Background)
@@ -180,7 +181,6 @@ void __attribute__((optimize("O3"))) sendScanLine(void) {
 
   static uint8_t linePixel = 0;
   static uint8_t videoOn = 0;
-  static uint32_t scanLineCounter = 0;
   static uint8_t bitmap[VRAM_WIDTH] __attribute__((aligned(32)));
   const uint8_t *GPIO __attribute__((aligned(32))) = (uint8_t*)(&(GPIOC_REG)->ODR);
 
@@ -197,7 +197,6 @@ void __attribute__((optimize("O3"))) sendScanLine(void) {
   if (TIM4_REG->CNT == 35) {
     videoOn = 1;
     linePixel = 0;
-    scanLineCounter = 0;
   }
 }
 
