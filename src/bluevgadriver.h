@@ -41,6 +41,7 @@ extern uint8_t TRAM [VRAM_HEIGHT][VRAM_WIDTH];  // VRAM with Characters or Tiles
 extern uint8_t CRAM [VRAM_HEIGHT][VRAM_WIDTH];  // Color VRAM - color = 3bits + 3bits (Foreground + Background) - 8 colors on PC15-PC13 port (RGB)
 extern uint8_t *TBitmap;
 extern volatile uint32_t frameNumber;
+extern volatile uint32_t scanLineCounter;
 #ifdef __cplusplus
 }
 #endif
