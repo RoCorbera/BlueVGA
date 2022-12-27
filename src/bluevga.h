@@ -107,6 +107,7 @@ class BlueVGA : public Print{
     */
     void waitVSync(uint16_t waitFrames = 1);
     uint32_t getFrameNumber();                  // it returns a Frame Sequenced Number
+    uint32_t getScanLineNumber();               // it returns the ScanLine Sequenced Number - each scanline takes 31.7775 microseconds and it can help to count time
 
     // allows to set the bitmap used to draw tiles in the screen...
     void setFontBitmap(const uint8_t *bmap);
