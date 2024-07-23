@@ -26,7 +26,7 @@
 
 */
 
-#include <arduino.h>
+#include <Arduino.h>
 #include "bluevga.h"
 #include "bluevgadriver.h"
 
