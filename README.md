@@ -24,7 +24,7 @@ It olny runs with Arduino board configuration called **Generic STM32F1 Series** 
 
 **Option 1**: The STMicroelectronics Official Core known as STM32 Core. This library only runs on minimum version 1.9.0 of STM32 Core
 
-In order to install this board to Arduino IDE, please refer to [this guide](https://github.com/stm32duino/wiki/wiki/Getting-Started)
+In order to install this board to Arduino IDE, please refer to [this guide](https://github.com/stm32duino/Arduino_Core_STM32/wiki/Getting-Started)
 
 For more information about STM32 Core [click here](https://github.com/stm32duino/Arduino_Core_STM32)
 For doubts or questions about how to use it, please go to this [forum](https://www.stm32duino.com/)
@@ -32,7 +32,7 @@ For doubts or questions about how to use it, please go to this [forum](https://w
 
 **Option 2**: The community Core known as Roger's Core.
 
-In order to install this board to Arduino IDE, please refer to [this guide](https://stm32duinoforum.com/forum/wiki_subdomain/index_title_Installation.html)
+In order to install this board to Arduino IDE, please refer to [this guide](https://github.com/rogerclarkmelbourne/Arduino_STM32/wiki/Installation)
 
 For more information about Roger's Core [click here](https://github.com/rogerclarkmelbourne/Arduino_STM32)
 For doubts or questions about how to use it, please go to this [forum](https://www.stm32duino.com/)
@@ -47,7 +47,7 @@ This works in the same way as Serial.print() and Serial.println() but its output
 In the examples there is the printTest.ino that demonstrates this capabilities.
 
 ## Functions related to text printing:
-```javascript
+```cpp
 #include "bluevga.h"
 #include "font.h"
 
@@ -86,7 +86,7 @@ But those RAM Tiles can be any place in the 28x30 tile space.
 This allows to create, for instance, an animation such as Space Invaders (in the examples), or even create widgets for the user interface.
 
 #### Main Methods are:
-```javascript
+```cpp
 void BlueBitmap::drawPixel(uint8_t x, uint8_t y, bool setReset) // to draw a pixel on any place of the screen
 void BlueBitmap::drawBitmap(uint8_t x, uint8_t y, uint8_t frameNum, bool setReset, int8_t color) // to draw a bitmap on the screen
 void BlueBitmap::drawBitmap8(uint8_t x, uint8_t y, uint8_t frameNum, bool setReset, int8_t color) // to fast draw of 8x8 or 16x8 bitmaps
@@ -156,7 +156,7 @@ This bitmap can represent a letter or any graphic drawing with 8x8 pixels.
 A tile has 8 bytes (64 bits).
 For representing the character 'A' as in the image above, we can create an array such as:
 
-```javascript
+```cpp
 
 // Font array for letter A bitmap
 // each tile has olny two colors out of 8 possible colors
@@ -183,7 +183,7 @@ const uint8_t bitmap_A = {
 
 ### Sketch example
 
-```javascript
+```cpp
 #include "bluevga.h"
 #include "font.h"
 
@@ -221,7 +221,7 @@ This library **halts SysTime functionality** in order to generate a solid and cl
 Thus functions such as delay(), millis(), micros(), delayMicroseconds() **will not work**!
 Instead of those functions, BlueVGA provides two alternatives:
 
-```javascript
+```cpp
 
 // each Frame is displayed 60 times per second.
 // waitVSync() holds the executuion for 1/60 of a second or 16.66 milliseconds
