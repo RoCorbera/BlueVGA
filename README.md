@@ -17,7 +17,7 @@ This graphical mode can be used to create some animation such as in the Space_In
 ![Space Invaders Screen Shot](https://github.com/RoCorbera/BlueVGA/blob/master/images/bluevga-SpaceInvaders.png)
 
 ## How to use it with Arduino IDE
-This library was designed to work with Arduino IDE using the STM32F103C8, aka [Bluepill](https://stm32duinoforum.com/forum/wiki_subdomain/index_title_Blue_Pill.html)
+This library was designed to work with Arduino IDE using the STM32F103C8, aka [Bluepill](https://stm32-base.org/boards/STM32F103C8T6-Blue-Pill.html)
 It olny runs with Arduino board configuration called **Generic STM32F1 Series** or **Generic STM32F103C Series**, depending on the choosen core.
 
 ### This library is compatible with the 2 most known "Arduino Cores", in a **transparently way**:
